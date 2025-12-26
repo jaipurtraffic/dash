@@ -17,7 +17,7 @@ export function DashboardHeader({ onRefresh, isRefreshing, lastUpdated }: Dashbo
               <Activity className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Traffic Monitor</h1>
+              <h1 className="text-xl font-semibold text-foreground">Jaipur Traffic Monitor</h1>
               <p className="text-xs text-muted-foreground">Real-time grid analysis</p>
             </div>
           </div>
@@ -25,7 +25,15 @@ export function DashboardHeader({ onRefresh, isRefreshing, lastUpdated }: Dashbo
           <div className="flex items-center gap-4">
             {lastUpdated && (
               <span className="text-xs text-muted-foreground font-mono hidden sm:block">
-                Updated: {lastUpdated.toLocaleTimeString()}
+                Last Updated: {lastUpdated.toLocaleString('en-IN', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  timeZone: 'Asia/Kolkata'
+                })}
               </span>
             )}
             <Button

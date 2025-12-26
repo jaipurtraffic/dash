@@ -1,4 +1,4 @@
-import { TrafficData } from "./TrafficGrid";
+import { TrafficData } from "@/types/traffic";
 
 interface StatsBarProps {
   data: TrafficData[];

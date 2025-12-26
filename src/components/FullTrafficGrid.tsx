@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { TrafficData } from "./TrafficGrid";
+import { TrafficData } from "@/types/traffic";
+import { parseISTTimestamp } from "@/utils/timeUtils";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,7 @@ const getSeverity = (cell: TrafficData | undefined): "normal" | "yellow" | "red"
 const getSeverityStyles = (severity: "normal" | "yellow" | "red" | "darkRed") => {
   switch (severity) {
     case "darkRed":
-      return "bg-traffic-dark-red/80 border-traffic-dark-red animate-pulse";
+      return "bg-traffic-dark-red/80 border-traffic-dark-red";
     case "red":
       return "bg-traffic-red/70 border-traffic-red";
     case "yellow":
@@ -55,13 +56,13 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
     <>
       <div className="overflow-x-auto">
         <div 
-          className="grid gap-1 p-4 bg-card/50 rounded-lg border border-border min-w-fit"
+          className="grid gap-1 p-2 sm:p-4 bg-card/50 rounded-lg border border-border min-w-fit"
           style={{ 
-            gridTemplateColumns: `auto repeat(${cols}, minmax(28px, 1fr))`,
+            gridTemplateColumns: `auto repeat(${cols}, minmax(24px, 1fr))`,
           }}
         >
           {/* Header row with column numbers */}
-          <div className="w-8" /> {/* Empty corner */}
+          <div className="w-6 sm:w-8" /> {/* Empty corner */}
           {Array.from({ length: cols }, (_, col) => (
             <div 
               key={`header-${col}`} 
@@ -77,11 +78,11 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
               {/* Row label */}
               <div 
                 key={`row-label-${row}`} 
-                className="flex items-center justify-center text-xs font-mono text-muted-foreground w-8"
+                className="flex items-center justify-center text-xs font-mono text-muted-foreground w-6 sm:w-8"
               >
                 {row}
               </div>
-              
+
               {/* Cells */}
               {Array.from({ length: cols }, (_, col) => {
                 const cell = dataMap.get(`${col}-${row}`);
@@ -109,21 +110,21 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
       </div>
 
       {/* Legend */}
-      <div className="flex items-center justify-center gap-6 mt-4 text-sm">
+      <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 text-xs sm:text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-muted/30 border border-border/50" />
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/30 border border-border/50" />
           <span className="text-muted-foreground">Normal</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-traffic-yellow/60 border border-traffic-yellow" />
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-yellow/60 border border-traffic-yellow" />
           <span className="text-muted-foreground">Moderate</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-traffic-red/70 border border-traffic-red" />
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-red/70 border border-traffic-red" />
           <span className="text-muted-foreground">High</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-sm bg-traffic-dark-red/80 border border-traffic-dark-red" />
+          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-dark-red/80 border border-traffic-dark-red" />
           <span className="text-muted-foreground">Critical</span>
         </div>
       </div>
@@ -173,7 +174,15 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
 
               {/* Timestamp */}
               <div className="text-center text-sm text-muted-foreground font-mono">
-                Last updated: {new Date(selectedCell.ts).toLocaleString()}
+                Last updated: {parseISTTimestamp(selectedCell.ts).toLocaleString('en-IN', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit',
+                  timeZone: 'Asia/Kolkata'
+                })}
               </div>
             </div>
           ) : (
