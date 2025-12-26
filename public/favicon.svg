@@ -1,0 +1,20 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background using primary color -->
+  <rect width="32" height="32" fill="#e11d48" rx="4"/>
+  
+  <!-- Traffic light circles -->
+  <circle cx="10" cy="10" r="3" fill="#22c55e" opacity="0.9"/>
+  <circle cx="16" cy="10" r="3" fill="#eab308" opacity="0.9"/>
+  <circle cx="22" cy="10" r="3" fill="#ef4444" opacity="0.9"/>
+  
+  <!-- Traffic lines representing roads -->
+  <rect x="4" y="18" width="24" height="2" fill="#ffffff" opacity="0.3"/>
+  <rect x="4" y="22" width="24" height="2" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Center divider dots -->
+  <rect x="14" y="18" width="4" height="2" fill="#ffffff" opacity="0.8"/>
+  <rect x="14" y="22" width="4" height="2" fill="#ffffff" opacity="0.8"/>
+  
+  <!-- "J" for Jaipur -->
+  <text x="16" y="30" font-family="Inter, sans-serif" font-size="8" font-weight="bold" fill="#ffffff" text-anchor="middle">J</text>
+</svg>
