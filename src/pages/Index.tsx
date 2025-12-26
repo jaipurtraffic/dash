@@ -116,17 +116,19 @@ export default function Index() {
                     return (
                       <div
                         key={`${cell.x}-${cell.y}`}
-                        className="bg-card border border-border rounded-lg p-4"
+                        className="bg-card border border-border rounded-lg p-3 sm:p-4"
                       >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
+                        {/* Mobile: Stack vertically, Desktop: Side by side */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          {/* Left section: Rank, Grid Info, Severity */}
+                          <div className="flex items-center gap-3">
                             {/* Rank */}
-                            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
+                            <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
                               {index + 1}
                             </div>
 
                             {/* Grid Info */}
-                            <div>
+                            <div className="min-w-0">
                               <div className="font-mono text-sm font-medium">
                                 Grid [{cell.x}, {cell.y}]
                               </div>
@@ -137,17 +139,17 @@ export default function Index() {
 
                             {/* Severity Badge */}
                             <div
-                              className={`px-2 py-1 rounded-full text-xs font-medium border ${severityColors[severity]}`}
+                              className={`flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium border ${severityColors[severity]}`}
                             >
                               {severity.charAt(0).toUpperCase() +
                                 severity.slice(1)}
                             </div>
                           </div>
 
-                          {/* Traffic Counts */}
-                          <div className="flex items-center gap-3">
+                          {/* Traffic Counts - Full width on mobile */}
+                          <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-3 pl-11 sm:pl-0">
                             <div className="text-center">
-                              <div className="text-lg font-bold text-traffic-yellow">
+                              <div className="text-base sm:text-lg font-bold text-traffic-yellow">
                                 {cell.yellow}
                               </div>
                               <div className="text-xs text-muted-foreground">
@@ -155,7 +157,7 @@ export default function Index() {
                               </div>
                             </div>
                             <div className="text-center">
-                              <div className="text-lg font-bold text-traffic-red">
+                              <div className="text-base sm:text-lg font-bold text-traffic-red">
                                 {cell.red}
                               </div>
                               <div className="text-xs text-muted-foreground">
@@ -163,48 +165,47 @@ export default function Index() {
                               </div>
                             </div>
                             <div className="text-center">
-                              <div className="text-lg font-bold text-traffic-dark-red">
+                              <div className="text-base sm:text-lg font-bold text-traffic-dark-red">
                                 {cell.dark_red}
                               </div>
                               <div className="text-xs text-muted-foreground">
                                 Dark Red
                               </div>
                             </div>
-                          </div>
-                        </div>
-
-                        {/* Google Maps Link */}
-                        <div className="mt-3 pt-3 border-t border-border">
-                          <a
-                            href={getGoogleMapsUrl(
-                              getCellCenterCoordinates(cell.x, cell.y).lat,
-                              getCellCenterCoordinates(cell.x, cell.y).lng
-                            )}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-1 bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors text-xs font-medium"
-                          >
-                            <svg
-                              className="w-3 h-3"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
+                            
+                            {/* Google Maps Link - inline on mobile */}
+                            <a
+                              href={getGoogleMapsUrl(
+                                getCellCenterCoordinates(cell.x, cell.y).lat,
+                                getCellCenterCoordinates(cell.x, cell.y).lng
+                              )}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-primary text-primary-foreground rounded-full sm:rounded hover:bg-primary/90 transition-colors text-xs font-medium"
+                              title="View on Google Maps"
                             >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                            </svg>
-                            View on Google Maps
-                          </a>
+                              <svg
+                                className="w-4 h-4 sm:w-3 sm:h-3"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                />
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                />
+                              </svg>
+                              <span className="hidden sm:inline sm:ml-2">View on Maps</span>
+                            </a>
+                          </div>
                         </div>
                       </div>
                     );
