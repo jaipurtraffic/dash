@@ -54,7 +54,7 @@ export function HistoricalChart({
 
   if (isLoading) {
     return (
-      <div className="h-80 flex items-center justify-center bg-muted/20 rounded-lg border border-border/50">
+      <div className="h-96 flex items-center justify-center bg-muted/20 rounded-lg border border-border/50">
         <div className="text-sm text-muted-foreground">
           Loading historical data...
         </div>
@@ -64,7 +64,7 @@ export function HistoricalChart({
 
   if (!data || data.length === 0) {
     return (
-      <div className="h-80 flex items-center justify-center bg-muted/20 rounded-lg border border-border/50">
+      <div className="h-96 flex items-center justify-center bg-muted/20 rounded-lg border border-border/50">
         <div className="text-sm text-muted-foreground">
           No historical data available
         </div>
@@ -75,6 +75,10 @@ export function HistoricalChart({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground">
+          <span className="text-primary">{">"}</span>
+          <span>Historical Chart</span>
+        </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-3">
             <span className="text-xs font-medium text-foreground">Metric:</span>
@@ -100,8 +104,8 @@ export function HistoricalChart({
         </div>
       </div>
 
-      <div className="h-80 bg-muted/20 rounded-lg border border-border/50 p-4">
-        <ResponsiveContainer width="100%" height={280}>
+      <div className="h-96 bg-muted/20 rounded-lg border border-border/50 p-4">
+        <ResponsiveContainer width="100%" height={340}>
           <LineChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.1} />
             <XAxis
