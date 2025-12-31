@@ -13,12 +13,13 @@ import {
   calculateTotalTraffic,
   getTrafficSeverityLevel,
 } from "@/utils/trafficUtils";
+import { formatRangeTime } from "@/utils/timeFormat";
+import { getHoursAgo } from "@/utils/timeUtils";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from "@/components/ui/dialog";
 import { HistoricalChart } from "@/components/HistoricalChart";
 
@@ -397,7 +398,13 @@ export function FullTrafficGrid({
         open={!!selectedCell}
         onOpenChange={(open) => !open && setSelectedCell(null)}
       >
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto data-[state=open]:slide-in-from-top-[10%] data-[state=closed]:slide-out-to-top-[10%]">
+        <DialogContent
+          className="
+            sm:max-w-[800px] max-h-[90vh] overflow-y-auto
+            data-[state=open]:slide-in-from-top-[10%]
+            data-[state=closed]:slide-out-to-top-[10%]
+          "
+        >
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -407,18 +414,7 @@ export function FullTrafficGrid({
                 <div className="text-xs text-muted-foreground font-mono">
                   Last updated:{" "}
                   {selectedCell?.ts
-                    ? parseISTTimestamp(selectedCell.ts).toLocaleString(
-                        "en-IN",
-                        {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                          timeZone: "Asia/Kolkata",
-                        },
-                      )
+                    ? `${formatRangeTime(parseISTTimestamp(selectedCell.ts))} (${getHoursAgo(parseISTTimestamp(selectedCell.ts))})`
                     : "N/A"}
                 </div>
               </div>
@@ -432,7 +428,12 @@ export function FullTrafficGrid({
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium"
+                  className="
+                    inline-flex items-center gap-2 px-4 py-2
+                    bg-primary text-primary-foreground rounded-lg
+                    hover:bg-primary/90 transition-colors
+                    text-sm font-medium
+                  "
                 >
                   <svg
                     className="w-4 h-4"
@@ -458,9 +459,6 @@ export function FullTrafficGrid({
               )}
             </div>
           </DialogHeader>
-          <DialogDescription>
-            Detailed traffic analysis and historical data for the selected grid location
-          </DialogDescription>
           {selectedCell ? (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">

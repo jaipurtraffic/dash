@@ -7,12 +7,12 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Dot,
   Legend,
 } from "recharts";
 import { TrafficData } from "@/types/traffic";
 import { parseISTTimestamp } from "@/utils/timeUtils";
 import { calculateTotalTraffic } from "@/utils/trafficUtils";
+import { formatDetailedTime, formatRangeTime } from "@/utils/timeFormat";
 
 interface HistoricalChartProps {
   data: TrafficData[];
@@ -21,19 +21,36 @@ interface HistoricalChartProps {
   onDurationChange?: (duration: string) => void;
 }
 
-type MetricType =
-  | "total"
-  | "yellow"
-  | "red"
-  | "dark_red"
-  | "latest_severity"
-  | "all";
+const CHART_COLORS = {
+  yellow: "hsl(var(--traffic-yellow))",
+  red: "hsl(var(--traffic-red))",
+  dark_red: "hsl(var(--traffic-dark-red))",
+  total: "hsl(var(--foreground))",
+  latest_severity: "#8b5cf6",
+} as const;
+
+const METRIC_CONFIG = [
+  { value: "total", label: "Total Traffic" },
+  { value: "yellow", label: "Yellow" },
+  { value: "red", label: "Red" },
+  { value: "dark_red", label: "Dark Red" },
+  { value: "latest_severity", label: "Latest Severity" },
+  { value: "all", label: "All Metrics" },
+] as const;
+
+const DURATION_OPTIONS = {
+  "1h": "1h",
+  "6h": "6h",
+  "12h": "12h",
+  "24h": "24h",
+  "7d": "7d",
+} as const;
+
+type MetricType = typeof METRIC_CONFIG[number]["value"];
 
 interface TooltipPayload {
   index: number;
   timestamp: Date;
-  timeString: string;
-  fullTimestamp: string;
   yellow: number;
   red: number;
   dark_red: number;
@@ -49,43 +66,56 @@ const CustomTooltip = ({
   active?: boolean;
   payload?: Array<{ payload: TooltipPayload }>;
 }) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    return (
-      <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
-        <div className="text-xs font-medium text-foreground mb-2">
-          {data.timestamp.toLocaleString()}
-        </div>
-        <div className="space-y-1">
-          <div className="flex justify-between gap-4 text-xs">
-            <span className="text-muted-foreground">Yellow:</span>
-            <span className="font-mono">{data.yellow}</span>
-          </div>
-          <div className="flex justify-between gap-4 text-xs">
-            <span className="text-muted-foreground">Red:</span>
-            <span className="font-mono">{data.red}</span>
-          </div>
-          <div className="flex justify-between gap-4 text-xs">
-            <span className="text-muted-foreground">Dark Red:</span>
-            <span className="font-mono">{data.dark_red}</span>
-          </div>
-          <div className="flex justify-between gap-4 text-xs font-medium border-t border-border/50 pt-1">
-            <span className="text-muted-foreground">Total:</span>
-            <span className="font-mono">{data.total}</span>
-          </div>
-          {data.latest_severity && (
-            <div className="flex justify-between gap-4 text-xs font-medium">
-              <span className="text-muted-foreground">Latest Severity:</span>
-              <span className="font-mono">
-                {data.latest_severity.toFixed(2)}
-              </span>
-            </div>
-          )}
-        </div>
+  if (!active || !payload?.length) return null;
+
+  const data = payload[0].payload;
+  const metrics = [
+    { label: "Yellow", value: data.yellow },
+    { label: "Red", value: data.red },
+    { label: "Dark Red", value: data.dark_red },
+    { label: "Total", value: data.total, highlight: true },
+  ];
+
+  return (
+    <div className="bg-background border border-border rounded-lg p-3 shadow-lg">
+      <div className="text-xs font-medium text-foreground mb-2">
+        {formatDetailedTime(data.timestamp)}
       </div>
-    );
-  }
-  return null;
+      <div className="space-y-1">
+        {metrics.map(({ label, value, highlight }) => (
+          <div
+            key={label}
+            className={`flex justify-between gap-4 text-xs ${highlight ? "font-medium border-t border-border/50 pt-1" : ""}`}
+          >
+            <span className="text-muted-foreground">{label}:</span>
+            <span className="font-mono">{value}</span>
+          </div>
+        ))}
+        {data.latest_severity && (
+          <div className="flex justify-between gap-4 text-xs font-medium">
+            <span className="text-muted-foreground">Latest Severity:</span>
+            <span className="font-mono">{data.latest_severity.toFixed(2)}</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Custom label component for data summary
+const DataSummaryLabel = ({ data }: { data: TrafficData[] }) => {
+  if (!data || data.length === 0) return null;
+
+  return (
+    <text
+      x="50%"
+      y="95%"
+      textAnchor="middle"
+      className="text-xs fill-muted-foreground"
+    >
+      {data.length} data points from {formatRangeTime(parseISTTimestamp(data[data.length - 1].ts))} to {formatRangeTime(parseISTTimestamp(data[0].ts))}
+    </text>
+  );
 };
 
 export function HistoricalChart({
@@ -96,70 +126,71 @@ export function HistoricalChart({
 }: HistoricalChartProps) {
   const [selectedMetric, setSelectedMetric] = useState<MetricType>("total");
 
-  const metricOptions = [
-    { value: "total", label: "Total Traffic" },
-    { value: "yellow", label: "Yellow" },
-    { value: "red", label: "Red" },
-    { value: "dark_red", label: "Dark Red" },
-    { value: "latest_severity", label: "Latest Severity" },
-    { value: "all", label: "All Metrics" },
-  ] as const;
-
-  const durationOptions = {
-    "1h": "1h",
-    "6h": "6h",
-    "12h": "12h",
-    "24h": "24h",
-    "7d": "7d",
-  } as const;
-
   const getMetricColor = (metric: MetricType): string => {
-    switch (metric) {
-      case "total":
-        return "hsl(var(--foreground))";
-      case "yellow":
-        return "hsl(var(--traffic-yellow))";
-      case "red":
-        return "hsl(var(--traffic-red))";
-      case "dark_red":
-        return "hsl(var(--traffic-dark-red))";
-      case "latest_severity":
-        return "#8b5cf6"; // Direct purple color
-      default:
-        return "hsl(var(--primary))";
-    }
+    return CHART_COLORS[metric] || CHART_COLORS.total;
   };
 
   const getMetricName = (metric: MetricType): string => {
-    switch (metric) {
-      case "total":
-        return "Total Traffic";
-      case "yellow":
-        return "Yellow";
-      case "red":
-        return "Red";
-      case "dark_red":
-        return "Dark Red";
-      case "latest_severity":
-        return "Latest Severity";
-      default:
-        return "Unknown";
-    }
+    return METRIC_CONFIG.find(m => m.value === metric)?.label || "Unknown";
   };
 
-  // Prepare data for Recharts with equal spacing
-  const chartData = data.map((point, index) => ({
-    index,
+  // Generate uniformly spaced time slots for the entire selected duration
+  const getSlots = (duration: string | undefined, end: Date): Date[] => {
+    const slots: Date[] = [];
+    const dur = duration ?? "24h";
+    let stepMs = 60 * 60 * 1000; // default 1 hour
+    let totalSteps = 24;
+
+    switch (dur) {
+      case "1h":
+        stepMs = 5 * 60 * 1000; // 5-min steps, 12 points
+        totalSteps = 12;
+        break;
+      case "6h":
+        stepMs = 30 * 60 * 1000; // 30-min
+        totalSteps = 12;
+        break;
+      case "12h":
+        stepMs = 60 * 60 * 1000; // 1-hour
+        totalSteps = 12;
+        break;
+      case "24h":
+        stepMs = 60 * 60 * 1000; // 1-hour
+        totalSteps = 24;
+        break;
+      case "7d":
+        stepMs = 24 * 60 * 60 * 1000; // 1-day
+        totalSteps = 7;
+        break;
+      default:
+        break;
+    }
+
+    for (let i = totalSteps - 1; i >= 0; i--) {
+      slots.push(new Date(end.getTime() - i * stepMs));
+    }
+    return slots;
+  };
+
+  // If no data, fallback to current time for slot generation so chart still renders empty grid gracefully
+  const endTime = data && data.length > 0 ? parseISTTimestamp(data[data.length - 1].ts) : new Date();
+  const slots = getSlots(selectedDuration, endTime);
+
+  // Build chart data directly from API points – keep actual timestamps to avoid losing data
+  const sortedData = [...data].sort((a, b) => parseISTTimestamp(a.ts).getTime() - parseISTTimestamp(b.ts).getTime());
+
+  const chartData = sortedData.map((point, idx) => ({
+    index: idx,
     timestamp: parseISTTimestamp(point.ts),
-    timeString: parseISTTimestamp(point.ts)
-      .toLocaleString([], {
-        day: "2-digit",
-        month: "2-digit",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      })
-      .replace(",", ""),
+    tsMs: parseISTTimestamp(point.ts).getTime(),
+    timeString: (() => {
+      const d = parseISTTimestamp(point.ts);
+      const dd = String(d.getDate()).padStart(2, "0");
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const hh = String(d.getHours()).padStart(2, "0");
+      const mins = String(d.getMinutes()).padStart(2, "0");
+      return `${dd}-${mm} ${hh}:${mins}`;
+    })(),
     fullTimestamp: point.ts,
     yellow: point.yellow,
     red: point.red,
@@ -168,9 +199,9 @@ export function HistoricalChart({
     latest_severity: point.yellow + 2 * point.red + 3 * point.dark_red,
   }));
 
-  // Calculate equal spacing for X-axis labels
-  const totalPoints = chartData.length;
-  const labelInterval = Math.max(1, Math.floor(totalPoints / 10)); // Show ~10 labels max
+  // Dynamically pick tick interval: aim for ≤ 12 labels
+  // Generate uniform tick positions from slots so labels are equally spaced
+  const ticks = slots.map((s) => s.getTime());
 
   if (isLoading) {
     return (
@@ -206,9 +237,14 @@ export function HistoricalChart({
             <select
               value={selectedMetric}
               onChange={(e) => setSelectedMetric(e.target.value as MetricType)}
-              className="px-3 py-1 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+              className="
+                px-3 py-1 text-sm bg-background border border-border
+                rounded-md focus:outline-none focus:ring-2
+                focus:ring-primary focus:border-transparent
+                cursor-pointer
+              "
             >
-              {metricOptions.map((option) => (
+              {METRIC_CONFIG.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -225,9 +261,14 @@ export function HistoricalChart({
               <select
                 value={selectedDuration}
                 onChange={(e) => onDurationChange(e.target.value)}
-                className="px-3 py-1 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+                className="
+                  px-3 py-1 text-sm bg-background border border-border
+                  rounded-md focus:outline-none focus:ring-2
+                  focus:ring-primary focus:border-transparent
+                  cursor-pointer
+                "
               >
-                {Object.entries(durationOptions).map(([value, label]) => (
+                {Object.entries(DURATION_OPTIONS).map(([value, label]) => (
                   <option key={value} value={value}>
                     {label}
                   </option>
@@ -247,7 +288,7 @@ export function HistoricalChart({
               top: 5,
               right: 30,
               left: 20,
-              bottom: 5,
+              bottom: 40,
             }}
           >
             <CartesianGrid
@@ -257,12 +298,19 @@ export function HistoricalChart({
               strokeOpacity={0.8}
             />
             <XAxis
-              dataKey="timeString"
+              dataKey="tsMs"
+              type="number"
+              scale="time"
+              domain={['auto', 'auto']}
               stroke="currentColor"
               strokeOpacity={0.3}
+              tickFormatter={(ts) => {
+                const d = new Date(ts as number);
+                return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth()+1).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+              }}
               tick={{ fontSize: 10 }}
               tickLine={false}
-              interval={labelInterval}
+              interval={Math.max(1, Math.floor(chartData.length / 4))}
             />
             <YAxis
               stroke="currentColor"
@@ -272,9 +320,11 @@ export function HistoricalChart({
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend
+              verticalAlign="bottom"
+              align="center"
               wrapperStyle={{
                 fontSize: "12px",
-                paddingTop: "10px",
+                paddingBottom: "5px",
               }}
             />
 
@@ -377,13 +427,9 @@ export function HistoricalChart({
                 name={getMetricName(selectedMetric)}
               />
             )}
+            <DataSummaryLabel data={data} />
           </LineChart>
         </ResponsiveContainer>
-        <div className="text-xs text-muted-foreground text-center">
-          {data.length} data points from{" "}
-          {parseISTTimestamp(data[0].ts).toLocaleString()} to{" "}
-          {parseISTTimestamp(data[data.length - 1].ts).toLocaleString()}
-        </div>
       </div>
     </div>
   );

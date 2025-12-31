@@ -261,7 +261,12 @@ export default function Index() {
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-primary text-primary-foreground rounded-full sm:rounded hover:bg-primary/90 transition-colors text-xs font-medium"
+                                className="
+                                  flex-shrink-0 inline-flex items-center justify-center
+                                  w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1
+                                  bg-primary text-primary-foreground rounded-full sm:rounded
+                                  hover:bg-primary/90 transition-colors text-xs font-medium
+                                "
                                 title="View on Google Maps"
                               >
                                 <svg
@@ -290,7 +295,12 @@ export default function Index() {
 
                               {/* Details Button */}
                               <button
-                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-secondary text-secondary-foreground rounded-full sm:rounded hover:bg-secondary/80 transition-colors text-xs font-medium"
+                                className="
+                                  flex-shrink-0 inline-flex items-center justify-center
+                                  w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1
+                                  bg-secondary text-secondary-foreground rounded-full sm:rounded
+                                  hover:bg-secondary/80 transition-colors text-xs font-medium
+                                "
                                 title="View Details"
                                 onClick={() => setSelectedCell(cell)}
                               >
@@ -453,7 +463,12 @@ export default function Index() {
                                 )}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-primary text-primary-foreground rounded-full sm:rounded hover:bg-primary/90 transition-colors text-xs font-medium"
+                                className="
+                                  flex-shrink-0 inline-flex items-center justify-center
+                                  w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1
+                                  bg-primary text-primary-foreground rounded-full sm:rounded
+                                  hover:bg-primary/90 transition-colors text-xs font-medium
+                                "
                                 title="View on Google Maps"
                               >
                                 <svg
@@ -482,9 +497,14 @@ export default function Index() {
 
                               {/* Details Button */}
                               <button
-                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-secondary text-secondary-foreground rounded-full sm:rounded hover:bg-secondary/80 transition-colors text-xs font-medium"
+                                className="
+                                  flex-shrink-0 inline-flex items-center justify-center
+                                  w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1
+                                  bg-secondary text-secondary-foreground rounded-full sm:rounded
+                                  hover:bg-secondary/80 transition-colors text-xs font-medium
+                                "
                                 title="View Details"
-                                onClick={() => setSelectedCell(cell)}
+                                onClick={() => setSelectedCell(area)}
                               >
                                 <svg
                                   className="w-4 h-4 sm:w-3 sm:h-3"
