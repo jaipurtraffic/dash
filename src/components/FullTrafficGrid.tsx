@@ -8,7 +8,6 @@ import {
   getGoogleMapsUrl,
 } from "@/utils/coordinateUtils";
 import {
-  calculateSeverityLevel,
   calculateSeverityDifferences,
   calculateTotalTraffic,
 } from "@/utils/trafficUtils";
@@ -21,6 +20,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { HistoricalChart } from "@/components/HistoricalChart";
+import { GridCell } from "@/components/GridCell";
+import { TrafficLegend } from "@/components/TrafficLegend";
+import { DailyAverageTraffic } from "@/components/DailyAverageTraffic";
+import { SeverityInfo } from "@/components/SeverityInfo";
 import {
   DURATION_OPTIONS,
   GRID_DIMENSIONS,
@@ -36,42 +39,6 @@ interface FullTrafficGridProps {
   initialSelectedCell?: TrafficData | null;
   activeTab?: string;
 }
-
-const getSeverity = (
-  cell: TrafficData | undefined,
-): "normal" | "yellow" | "red" | "darkRed" => {
-  if (!cell) return "normal";
-  if (cell.dark_red > 0) return "darkRed";
-  if (cell.red > 0) return "red";
-  if (cell.yellow > 0) return "yellow";
-  return "normal";
-};
-
-const getSeverityStyles = (
-  severity: "normal" | "yellow" | "red" | "darkRed",
-) => {
-  switch (severity) {
-    case "darkRed":
-      return "bg-traffic-dark-red/60 border-traffic-dark-red";
-    case "red":
-      return "bg-traffic-red/50 border-traffic-red";
-    case "yellow":
-      return "bg-traffic-yellow/40 border-traffic-yellow";
-    default:
-      return "bg-muted/20 border-border/50";
-  }
-};
-
-const getSeverityLevelStyles = (level: "normal" | "moderate" | "high") => {
-  switch (level) {
-    case "high":
-      return "bg-red-600/50 border-red-600";
-    case "moderate":
-      return "bg-yellow-600/40 border-yellow-600";
-    default:
-      return "bg-muted/20 border-border/50";
-  }
-};
 
 // Fixed row height for consistent layout without dynamic calc()
 const ROW_HEIGHT = 53.3;
@@ -284,61 +251,22 @@ export function FullTrafficGrid({
                 >
                   {Array.from({ length: rows }, (_, row) => (
                     <React.Fragment key={`row-${row}`}>
-                      {/* Grid cells */}
                       {Array.from({ length: cols }, (_, col) => {
                         const cell = dataMap.get(`${col}-${row}`);
-
                         const cellKey = `${col}-${row}`;
-                        const isTop10 =
-                          highlightTop10 && top10Cells.has(cellKey);
-
-                        let isHighlighted = false;
-                        let styles = "";
-                        let title = `Grid [${col}, ${row}]`;
-
-                        if (mode === "severity") {
-                          const severityLevel = calculateSeverityLevel(cell);
-                          isHighlighted = severityLevel !== "normal" || isTop10;
-                          styles = getSeverityLevelStyles(severityLevel);
-                          if (cell) {
-                            title = `Grid [${col}, ${row}] - Severity: ${
-                              cell.latest_severity || "N/A"
-                            } (P95: ${cell.p95 || "N/A"}, P99: ${
-                              cell.p99 || "N/A"
-                            })${isTop10 ? " - TOP 10!" : ""}`;
-                          }
-                        } else {
-                          const severity = getSeverity(cell);
-                          isHighlighted = severity !== "normal" || isTop10;
-                          styles = getSeverityStyles(severity);
-                          if (cell) {
-                            title = `Grid [${col}, ${row}] - Y:${cell.yellow} R:${cell.red} DR:${cell.dark_red}${isTop10 ? " - TOP 10!" : ""}`;
-                          }
-                        }
-
+                        const isTop10 = highlightTop10 && top10Cells.has(cellKey);
+                        
                         return (
-                          <button
-                            key={`cell-${col}-${row}`}
-                            onClick={() => handleCellClick(col, row)}
-                            className={cn(
-                              "rounded-sm border transition-all duration-200 relative",
-                              "hover:scale-110 hover:z-10 hover:shadow-lg",
-                              "focus:outline-none focus:ring-2 focus:ring-primary/50",
-                              styles,
-                              isTop10 &&
-                                "ring-2 ring-primary ring-offset-1 ring-offset-background",
-                              isHighlighted && "cursor-pointer",
-                            )}
-                            title={title}
-                          >
-                            {isTop10 && (
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="bg-primary/90 text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-lg">
-                                  {Array.from(top10Cells).indexOf(cellKey) + 1}
-                                </div>
-                              </div>
-                            )}
-                          </button>
+                          <GridCell
+                            key={cellKey}
+                            cell={cell}
+                            col={col}
+                            row={row}
+                            mode={mode}
+                            isTop10={isTop10}
+                            top10Cells={top10Cells}
+                            onCellClick={handleCellClick}
+                          />
                         );
                       })}
                     </React.Fragment>
@@ -351,43 +279,7 @@ export function FullTrafficGrid({
 
         {/* Legend */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 text-xs sm:text-sm">
-          {mode === "severity" ? (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/20 border border-border/50" />
-                <span className="text-muted-foreground">Normal (≤ P95)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-yellow-600/40 border border-yellow-600" />
-                <span className="text-muted-foreground">
-                  Moderate (&gt; P95, ≤ P99)
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-red-600/50 border border-red-600" />
-                <span className="text-muted-foreground">High (&gt; P99)</span>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/20 border border-border/50" />
-                <span className="text-muted-foreground">Normal</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-yellow/40 border border-traffic-yellow" />
-                <span className="text-muted-foreground">Moderate</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-red/50 border border-traffic-red" />
-                <span className="text-muted-foreground">High</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-dark-red/60 border border-traffic-dark-red" />
-                <span className="text-muted-foreground">Critical</span>
-              </div>
-            </>
-          )}
+          <TrafficLegend mode={mode} />
         </div>
       </div>
 
@@ -482,39 +374,7 @@ export function FullTrafficGrid({
 
               {/* Severity Information */}
               <div className="space-y-2">
-                <div className={`grid gap-4 ${activeTab === "sustained" ? "grid-cols-2" : "grid-cols-3"}`}>
-                <div className="text-center p-3 rounded-lg bg-muted/20 border border-border/50">
-                  <div className="text-2xl font-bold text-foreground">
-                    {selectedCell.latest_severity?.toFixed(0) || "N/A"}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Latest Severity
-                  </div>
-                </div>
-                {activeTab === "sustained" ? (
-                  <div className="text-center p-3 rounded-lg bg-muted/20 border border-border/50">
-                    <div className="text-2xl font-bold text-muted-foreground">
-                      {selectedCell.threshold_p95?.toFixed(0) || "N/A"}
-                    </div>
-                    <div className="text-xs text-muted-foreground">Threshold P95</div>
-                  </div>
-                ) : (
-                  <>
-                    <div className="text-center p-3 rounded-lg bg-muted/20 border border-border/50">
-                      <div className="text-2xl font-bold text-muted-foreground">
-                        {selectedCell.p95?.toFixed(0) || "N/A"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">P95</div>
-                    </div>
-                    <div className="text-center p-3 rounded-lg bg-muted/20 border border-border/50">
-                      <div className="text-2xl font-bold text-muted-foreground">
-                        {selectedCell.p99?.toFixed(0) || "N/A"}
-                      </div>
-                      <div className="text-xs text-muted-foreground">P99</div>
-                    </div>
-                  </>
-                )}
-              </div>
+                <SeverityInfo selectedCell={selectedCell} activeTab={activeTab} />
               </div>
 
               {/* Daily Average Traffic */}
@@ -525,53 +385,7 @@ export function FullTrafficGrid({
                     <span>Daily Average Traffic (Severity)</span>
                   </div>
                   <div className="space-y-1">
-                    {(() => {
-                      // Group data by day and calculate daily averages
-                      const dailyAverages = historicalData.reduce((acc, point) => {
-                        const date = parseISTTimestamp(point.ts).toDateString();
-                        const severity = point.yellow + 2 * point.red + 3 * point.dark_red;
-
-                        if (!acc[date]) {
-                          acc[date] = { total: 0, count: 0, date };
-                        }
-                        acc[date].total += severity;
-                        acc[date].count += 1;
-                        return acc;
-                      }, {} as Record<string, { total: number; count: number; date: string }>);
-
-                      // Convert to array and sort by date (oldest to latest)
-                      const sortedDays = Object.values(dailyAverages)
-                        .map(day => ({
-                          date: new Date(day.date).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric'
-                          }),
-                          dateObj: new Date(day.date),
-                          average: Math.round(day.total / day.count)
-                        }))
-                        .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
-
-                      return (
-                        <>
-                          {/* First row: Dates */}
-                          <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${sortedDays.length}, minmax(0, 1fr))` }}>
-                            {sortedDays.map((day, index) => (
-                              <div key={`date-${index}`} className="text-center">
-                                <span className="text-xs font-medium text-muted-foreground">{day.date}</span>
-                              </div>
-                            ))}
-                          </div>
-                          {/* Second row: Values */}
-                          <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${sortedDays.length}, minmax(0, 1fr))` }}>
-                            {sortedDays.map((day, index) => (
-                              <div key={`value-${index}`} className="text-center p-2 rounded bg-muted/20 border border-border/50">
-                                <span className="text-sm font-bold text-foreground">{day.average}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      );
-                    })()}
+                    <DailyAverageTraffic historicalData={historicalData} />
                   </div>
                 </div>
               )}
