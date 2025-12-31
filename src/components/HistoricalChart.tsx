@@ -80,20 +80,17 @@ export function HistoricalChart({
           <span>Historical Chart</span>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-medium text-foreground">Metric:</span>
-            <select
-              value={selectedMetric}
-              onChange={(e) => setSelectedMetric(e.target.value as MetricType)}
-              className="px-3 py-1 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
-            >
-              {METRIC_CONFIG.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select
+            value={selectedMetric}
+            onChange={(e) => setSelectedMetric(e.target.value as MetricType)}
+            className="px-3 py-1 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+          >
+            {METRIC_CONFIG.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
 
           {onDurationChange && (
             <DurationSelector

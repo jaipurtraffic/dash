@@ -114,18 +114,18 @@ export default function Index() {
 
       <main className="container py-2 space-y-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
-            <TabsTrigger value="traffic" className="gap-2">
-              <Activity className="w-4 h-4" />
-              Traffic Analysis
+          <TabsList className="grid w-full max-w-lg grid-cols-3 h-auto sm:h-10 p-1 sm:p-1">
+            <TabsTrigger value="traffic" className="gap-1 sm:gap-2 flex-col sm:flex-row px-2 py-2 sm:px-3 sm:py-1.5 min-h-[3rem] sm:min-h-0">
+              <Activity className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm leading-tight text-center">Traffic Analysis</span>
             </TabsTrigger>
-            <TabsTrigger value="severity" className="gap-2">
-              <BarChart3 className="w-4 h-4" />
-              Severity Analysis
+            <TabsTrigger value="severity" className="gap-1 sm:gap-2 flex-col sm:flex-row px-2 py-2 sm:px-3 sm:py-1.5 min-h-[3rem] sm:min-h-0">
+              <BarChart3 className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm leading-tight text-center">Severity Analysis</span>
             </TabsTrigger>
-            <TabsTrigger value="sustained" className="gap-2">
-              <Clock className="w-4 h-4" />
-              Sustained Traffic
+            <TabsTrigger value="sustained" className="gap-1 sm:gap-2 flex-col sm:flex-row px-2 py-2 sm:px-3 sm:py-1.5 min-h-[3rem] sm:min-h-0">
+              <Clock className="w-4 h-4 flex-shrink-0" />
+              <span className="text-xs sm:text-sm leading-tight text-center">Sustained Traffic</span>
             </TabsTrigger>
           </TabsList>
 

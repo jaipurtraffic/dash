@@ -116,13 +116,19 @@ export function FullTrafficGrid({
     enabled: !!selectedCoords,
   });
 
-  // Handle initialSelectedCell prop changes
+  // Handle initialSelectedCell prop changes and tab switches
   React.useEffect(() => {
-    if (initialSelectedCell) {
+    if (initialSelectedCell && (!selectedCell || selectedCell.x !== initialSelectedCell.x || selectedCell.y !== initialSelectedCell.y)) {
       setSelectedCell(initialSelectedCell);
       setSelectedCoords({ x: initialSelectedCell.x, y: initialSelectedCell.y });
     }
-  }, [initialSelectedCell]);
+  }, [initialSelectedCell, selectedCell]);
+
+  // Clear selected cell when active tab changes
+  React.useEffect(() => {
+    setSelectedCell(null);
+    setSelectedCoords(null);
+  }, [activeTab]);
 
   const gridContainerRef = React.useRef<HTMLDivElement>(null);
   const rowHeight = useRowHeight(gridContainerRef, rows);
