@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { HistoricalChart } from "@/components/HistoricalChart";
 
@@ -27,6 +28,7 @@ interface FullTrafficGridProps {
   cols?: number;
   mode?: "traffic" | "severity";
   highlightTop10?: boolean;
+  initialSelectedCell?: TrafficData | null;
 }
 
 const getSeverity = (
@@ -103,12 +105,13 @@ export function FullTrafficGrid({
   cols = 15,
   mode = "traffic",
   highlightTop10 = false,
+  initialSelectedCell,
 }: FullTrafficGridProps) {
-  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(null);
+  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(initialSelectedCell || null);
   const [selectedCoords, setSelectedCoords] = useState<{
     x: number;
     y: number;
-  } | null>(null);
+  } | null>(initialSelectedCell ? { x: initialSelectedCell.x, y: initialSelectedCell.y } : null);
   const [selectedDuration, setSelectedDuration] = useState<string>("24h");
 
   const DURATION_OPTIONS = {
@@ -140,6 +143,14 @@ export function FullTrafficGrid({
     },
     enabled: !!selectedCoords,
   });
+
+  // Handle initialSelectedCell prop changes
+  React.useEffect(() => {
+    if (initialSelectedCell) {
+      setSelectedCell(initialSelectedCell);
+      setSelectedCoords({ x: initialSelectedCell.x, y: initialSelectedCell.y });
+    }
+  }, [initialSelectedCell]);
 
   const gridContainerRef = React.useRef<HTMLDivElement>(null);
   const rowHeight = useRowHeight(gridContainerRef, rows);
@@ -386,7 +397,7 @@ export function FullTrafficGrid({
         open={!!selectedCell}
         onOpenChange={(open) => !open && setSelectedCell(null)}
       >
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto data-[state=open]:slide-in-from-top-[10%] data-[state=closed]:slide-out-to-top-[10%]">
           <DialogHeader>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
@@ -447,6 +458,9 @@ export function FullTrafficGrid({
               )}
             </div>
           </DialogHeader>
+          <DialogDescription>
+            Detailed traffic analysis and historical data for the selected grid location
+          </DialogDescription>
           {selectedCell ? (
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">

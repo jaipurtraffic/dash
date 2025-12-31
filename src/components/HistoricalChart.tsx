@@ -240,7 +240,7 @@ export function HistoricalChart({
 
       {/* Chart Container */}
       <div className="h-80 bg-muted/20 rounded-lg border border-border/50 p-4">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={320}>
           <LineChart
             data={chartData}
             margin={{

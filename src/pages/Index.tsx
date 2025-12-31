@@ -42,6 +42,7 @@ const StatsBar = lazy(() =>
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("traffic");
+  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(null);
 
   const { data: currentData } = useQuery({
     queryKey: ["currentTraffic"],
@@ -150,6 +151,7 @@ export default function Index() {
                   rows={21}
                   cols={15}
                   highlightTop10={true}
+                  initialSelectedCell={selectedCell}
                 />
               </Suspense>
 
@@ -285,6 +287,30 @@ export default function Index() {
                                   View on Maps
                                 </span>
                               </a>
+
+                              {/* Details Button */}
+                              <button
+                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-secondary text-secondary-foreground rounded-full sm:rounded hover:bg-secondary/80 transition-colors text-xs font-medium"
+                                title="View Details"
+                                onClick={() => setSelectedCell(cell)}
+                              >
+                                <svg
+                                  className="w-4 h-4 sm:w-3 sm:h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                <span className="hidden sm:inline sm:ml-2">
+                                  Details
+                                </span>
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -322,6 +348,7 @@ export default function Index() {
                   cols={15}
                   mode="severity"
                   highlightTop10={true}
+                  initialSelectedCell={selectedCell}
                 />
               </Suspense>
 
@@ -452,6 +479,30 @@ export default function Index() {
                                   View on Maps
                                 </span>
                               </a>
+
+                              {/* Details Button */}
+                              <button
+                                className="flex-shrink-0 inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-1 bg-secondary text-secondary-foreground rounded-full sm:rounded hover:bg-secondary/80 transition-colors text-xs font-medium"
+                                title="View Details"
+                                onClick={() => setSelectedCell(cell)}
+                              >
+                                <svg
+                                  className="w-4 h-4 sm:w-3 sm:h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                <span className="hidden sm:inline sm:ml-2">
+                                  Details
+                                </span>
+                              </button>
                             </div>
                           </div>
                         </div>
