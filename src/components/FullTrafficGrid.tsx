@@ -17,6 +17,7 @@ interface FullTrafficGridProps {
   data: TrafficData[];
   rows?: number;
   cols?: number;
+  mode?: "traffic" | "severity";
 }
 
 const getSeverity = (cell: TrafficData | undefined): "normal" | "yellow" | "red" | "darkRed" => {
@@ -24,6 +25,17 @@ const getSeverity = (cell: TrafficData | undefined): "normal" | "yellow" | "red"
   if (cell.dark_red > 0) return "darkRed";
   if (cell.red > 0) return "red";
   if (cell.yellow > 0) return "yellow";
+  return "normal";
+};
+
+const getSeverityLevel = (cell: TrafficData | undefined): "normal" | "moderate" | "high" => {
+  if (!cell || !cell.latest_severity || !cell.p95 || !cell.p99) return "normal";
+
+  // Handle case when all values are 0
+  if (cell.latest_severity === 0 && cell.p95 === 0 && cell.p99 === 0) return "normal";
+
+  if (cell.latest_severity > cell.p99) return "high";
+  if (cell.latest_severity > cell.p95) return "moderate";
   return "normal";
 };
 
@@ -35,6 +47,17 @@ const getSeverityStyles = (severity: "normal" | "yellow" | "red" | "darkRed") =>
       return "bg-traffic-red/50 border-traffic-red";
     case "yellow":
       return "bg-traffic-yellow/40 border-traffic-yellow";
+    default:
+      return "bg-muted/20 border-border/50";
+  }
+};
+
+const getSeverityLevelStyles = (level: "normal" | "moderate" | "high") => {
+  switch (level) {
+    case "high":
+      return "bg-red-600/50 border-red-600";
+    case "moderate":
+      return "bg-yellow-600/40 border-yellow-600";
     default:
       return "bg-muted/20 border-border/50";
   }
@@ -69,7 +92,7 @@ const useRowHeight = (containerRef: React.RefObject<HTMLDivElement>, rows: numbe
   return rowHeight;
 };
 
-export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridProps) {
+export function FullTrafficGrid({ data, rows = 21, cols = 15, mode = "traffic" }: FullTrafficGridProps) {
   const [selectedCell, setSelectedCell] = useState<TrafficData | null>(null);
   const [selectedCoords, setSelectedCoords] = useState<{ x: number; y: number } | null>(null);
 
@@ -162,8 +185,26 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
                       {/* Grid cells */}
                       {Array.from({ length: cols }, (_, col) => {
                         const cell = dataMap.get(`${col}-${row}`);
-                        const severity = getSeverity(cell);
-                        const isHighlighted = severity !== "normal";
+
+                        let isHighlighted = false;
+                        let styles = "";
+                        let title = `Grid [${col}, ${row}]`;
+
+                        if (mode === "severity") {
+                          const severityLevel = getSeverityLevel(cell);
+                          isHighlighted = severityLevel !== "normal";
+                          styles = getSeverityLevelStyles(severityLevel);
+                          if (cell) {
+                            title = `Grid [${col}, ${row}] - Severity: ${cell.latest_severity || 'N/A'} (P95: ${cell.p95 || 'N/A'}, P99: ${cell.p99 || 'N/A'})`;
+                          }
+                        } else {
+                          const severity = getSeverity(cell);
+                          isHighlighted = severity !== "normal";
+                          styles = getSeverityStyles(severity);
+                          if (cell) {
+                            title = `Grid [${col}, ${row}] - Y:${cell.yellow} R:${cell.red} DR:${cell.dark_red}`;
+                          }
+                        }
 
                         return (
                           <button
@@ -173,14 +214,10 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
                               "rounded-sm border transition-all duration-200",
                               "hover:scale-110 hover:z-10 hover:shadow-lg",
                               "focus:outline-none focus:ring-2 focus:ring-primary/50",
-                              getSeverityStyles(severity),
+                              styles,
                               isHighlighted && "cursor-pointer"
                             )}
-                            title={
-                              cell
-                                ? `Grid [${col}, ${row}] - Y:${cell.yellow} R:${cell.red} DR:${cell.dark_red}`
-                                : `Grid [${col}, ${row}]`
-                            }
+                            title={title}
                           />
                         );
                       })}
@@ -194,22 +231,41 @@ export function FullTrafficGrid({ data, rows = 21, cols = 15 }: FullTrafficGridP
 
         {/* Legend */}
         <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 mt-4 text-xs sm:text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/20 border border-border/50" />
-            <span className="text-muted-foreground">Normal</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-yellow/40 border border-traffic-yellow" />
-            <span className="text-muted-foreground">Moderate</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-red/50 border border-traffic-red" />
-            <span className="text-muted-foreground">High</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-dark-red/60 border border-traffic-dark-red" />
-            <span className="text-muted-foreground">Critical</span>
-          </div>
+          {mode === "severity" ? (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/20 border border-border/50" />
+                <span className="text-muted-foreground">Normal (≤ P95)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-yellow-600/40 border border-yellow-600" />
+                <span className="text-muted-foreground">Moderate (&gt; P95, ≤ P99)</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-red-600/50 border border-red-600" />
+                <span className="text-muted-foreground">High (&gt; P99)</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-muted/20 border border-border/50" />
+                <span className="text-muted-foreground">Normal</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-yellow/40 border border-traffic-yellow" />
+                <span className="text-muted-foreground">Moderate</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-red/50 border border-traffic-red" />
+                <span className="text-muted-foreground">High</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-traffic-dark-red/60 border border-traffic-dark-red" />
+                <span className="text-muted-foreground">Critical</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

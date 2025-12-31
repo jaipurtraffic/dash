@@ -5,6 +5,7 @@ import { DashboardHeader } from "@/components/DashboardHeader";
 import { TrafficData } from "@/types/traffic";
 import Activity from "lucide-react/dist/esm/icons/activity";
 import TrendingUp from "lucide-react/dist/esm/icons/trending-up";
+import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 import { parseISTTimestamp } from "@/utils/timeUtils";
 import {
   getCellCenterCoordinates,
@@ -63,10 +64,14 @@ export default function Index() {
 
       <main className="container py-2 space-y-3">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-md grid-cols-3">
             <TabsTrigger value="current" className="gap-2">
               <Activity className="w-4 h-4" />
               Current Traffic
+            </TabsTrigger>
+            <TabsTrigger value="severity" className="gap-2">
+              <BarChart3 className="w-4 h-4" />
+              Severity Analysis
             </TabsTrigger>
             <TabsTrigger value="congested" className="gap-2">
               <TrendingUp className="w-4 h-4" />
@@ -83,6 +88,19 @@ export default function Index() {
               </Suspense>
               <Suspense fallback={<div className="aspect-[15/21] bg-muted/20 animate-pulse rounded-lg" />}>
                 <FullTrafficGrid data={currentData || []} rows={21} cols={15} />
+              </Suspense>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="severity">
+            <div className="space-y-3">
+              <Suspense fallback={<div className="h-12 bg-muted/20 animate-pulse rounded-lg" />}>
+                <div className="mt-3">
+                  <StatsBar data={currentData || []} mode="severity" />
+                </div>
+              </Suspense>
+              <Suspense fallback={<div className="aspect-[15/21] bg-muted/20 animate-pulse rounded-lg" />}>
+                <FullTrafficGrid data={currentData || []} rows={21} cols={15} mode="severity" />
               </Suspense>
             </div>
           </TabsContent>
