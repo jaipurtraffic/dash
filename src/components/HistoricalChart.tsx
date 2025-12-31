@@ -13,6 +13,7 @@ import { TrafficData } from "@/types/traffic";
 import { parseISTTimestamp } from "@/utils/timeUtils";
 import { calculateTotalTraffic } from "@/utils/trafficUtils";
 import { formatDetailedTime, formatRangeTime } from "@/utils/timeFormat";
+import { DURATION_OPTIONS } from "@/constants/traffic";
 
 interface HistoricalChartProps {
   data: TrafficData[];
@@ -37,14 +38,6 @@ const METRIC_CONFIG = [
   { value: "latest_severity", label: "Latest Severity" },
   { value: "all", label: "All Metrics" },
 ] as const;
-
-const DURATION_OPTIONS = {
-  "1h": "1h",
-  "6h": "6h",
-  "12h": "12h",
-  "24h": "24h",
-  "7d": "7d",
-} as const;
 
 type MetricType = typeof METRIC_CONFIG[number]["value"];
 

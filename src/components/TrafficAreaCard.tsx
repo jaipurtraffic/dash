@@ -10,7 +10,7 @@ import {
 } from "@/utils/trafficUtils";
 
 interface TrafficAreaCardProps {
-  cell: TrafficData;
+  cell: TrafficData & { severityLevel?: string };
   index: number;
   showThresholdP95?: boolean;
   severityColors?: Record<string, string>;
@@ -80,18 +80,15 @@ export function TrafficAreaCard({
           {/* Severity Badge */}
           <div
             className={`flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium border ${
-              severityLevelColors
-                ? severityLevelColors[
-                    (cell as any).severityLevel as keyof typeof severityLevelColors
-                  ]
+              severityLevelColors && cell.severityLevel
+                ? severityLevelColors[cell.severityLevel]
                 : severityColors
                 ? severityColors[severity as keyof typeof severityColors]
                 : ""
             }`}
           >
-            {severityLevelColors
-              ? (cell as any).severityLevel.charAt(0).toUpperCase() +
-                (cell as any).severityLevel.slice(1)
+            {severityLevelColors && cell.severityLevel
+              ? cell.severityLevel.charAt(0).toUpperCase() + cell.severityLevel.slice(1)
               : severity.charAt(0).toUpperCase() + severity.slice(1)}
           </div>
         </div>

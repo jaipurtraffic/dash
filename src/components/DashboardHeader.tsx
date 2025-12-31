@@ -1,6 +1,7 @@
 import Activity from "lucide-react/dist/esm/icons/activity";
 import { formatDetailedTime } from "@/utils/timeFormat";
 import { getHoursAgo } from "@/utils/timeUtils";
+import { GOOGLE_MAPS_URL } from "@/constants/traffic";
 
 const MapIcon = () => (
   <svg
@@ -43,14 +44,10 @@ export function DashboardHeader({ lastUpdated }: DashboardHeaderProps) {
                   Jaipur Traffic Monitor
                 </h1>
                 <a
-                  href="https://www.google.com/maps/d/edit?mid=1AW5K34KiZmKo32vtBsmOnzNSU45oQS4"
+                  href={GOOGLE_MAPS_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="
-                    inline-flex items-center gap-1 px-2 py-1
-                    text-xs bg-primary/10 text-primary rounded-md
-                    hover:bg-primary/20 transition-colors
-                  "
+                  className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors"
                 >
                   <MapIcon />
                   Grid Mapping

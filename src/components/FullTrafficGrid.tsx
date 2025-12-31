@@ -21,6 +21,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { HistoricalChart } from "@/components/HistoricalChart";
+import {
+  DURATION_OPTIONS,
+  GRID_DIMENSIONS,
+  API_ENDPOINTS,
+} from "@/constants/traffic";
 
 interface FullTrafficGridProps {
   data: TrafficData[];
@@ -70,7 +75,7 @@ const getSeverityLevelStyles = (level: "normal" | "moderate" | "high") => {
 
 // Fixed row height for consistent layout without dynamic calc()
 const ROW_HEIGHT = 53.3;
-const GRID_ASPECT_RATIO = 12750 / 10920;
+const GRID_ASPECT_RATIO = GRID_DIMENSIONS.ASPECT_RATIO;
 
 const useRowHeight = (
   containerRef: React.RefObject<HTMLDivElement>,
@@ -102,8 +107,8 @@ const useRowHeight = (
 
 export function FullTrafficGrid({
   data,
-  rows = 21,
-  cols = 15,
+  rows = GRID_DIMENSIONS.ROWS,
+  cols = GRID_DIMENSIONS.COLS,
   mode = "traffic",
   highlightTop10 = false,
   initialSelectedCell,
@@ -116,14 +121,6 @@ export function FullTrafficGrid({
   } | null>(initialSelectedCell ? { x: initialSelectedCell.x, y: initialSelectedCell.y } : null);
   const [selectedDuration, setSelectedDuration] = useState<string>("24h");
 
-  const DURATION_OPTIONS = {
-    "1h": "1h",
-    "6h": "6h",
-    "12h": "12h",
-    "24h": "24h",
-    "7d": "7d",
-  } as const;
-
   // Fetch historical data when a cell is selected
   const { data: historicalData, isLoading: isHistoricalLoading } = useQuery({
     queryKey: [
@@ -135,7 +132,7 @@ export function FullTrafficGrid({
     queryFn: async () => {
       if (!selectedCoords) return [];
 
-      const url = `https://traffic-worker.mangalaman93.workers.dev/history?x=${selectedCoords.x}&y=${selectedCoords.y}&duration=${selectedDuration}`;
+      const url = API_ENDPOINTS.HISTORY(selectedCoords.x, selectedCoords.y, selectedDuration);
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch historical data");
@@ -531,7 +528,7 @@ export function FullTrafficGrid({
                     {(() => {
                       // Group data by day and calculate daily averages
                       const dailyAverages = historicalData.reduce((acc, point) => {
-                        const date = new Date(point.ts).toDateString();
+                        const date = parseISTTimestamp(point.ts).toDateString();
                         const severity = point.yellow + 2 * point.red + 3 * point.dark_red;
 
                         if (!acc[date]) {
@@ -542,16 +539,17 @@ export function FullTrafficGrid({
                         return acc;
                       }, {} as Record<string, { total: number; count: number; date: string }>);
 
-                      // Convert to array and sort by date
+                      // Convert to array and sort by date (oldest to latest)
                       const sortedDays = Object.values(dailyAverages)
                         .map(day => ({
                           date: new Date(day.date).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric'
                           }),
+                          dateObj: new Date(day.date),
                           average: Math.round(day.total / day.count)
                         }))
-                        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+                        .sort((a, b) => a.dateObj.getTime() - b.dateObj.getTime());
 
                       return (
                         <>

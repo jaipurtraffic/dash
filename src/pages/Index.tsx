@@ -11,20 +11,11 @@ import { parseISTTimestamp } from "@/utils/timeUtils";
 import {
   calculateSeverityDifferences,
 } from "@/utils/trafficUtils";
-
-// Shared severity color constants
-const TRAFFIC_SEVERITY_COLORS = {
-  critical:
-    "bg-traffic-dark-red/20 border-traffic-dark-red/50 text-traffic-dark-red",
-  high: "bg-traffic-red/20 border-traffic-red/50 text-traffic-red",
-  medium: "bg-traffic-yellow/20 border-traffic-yellow/50 text-traffic-yellow",
-} as const;
-
-const SEVERITY_LEVEL_COLORS = {
-  high: "bg-red-600/20 border-red-600/50 text-red-600",
-  moderate: "bg-yellow-600/20 border-yellow-600/50 text-yellow-600",
-  normal: "bg-muted/20 border-border/50 text-muted-foreground",
-} as const;
+import {
+  TRAFFIC_SEVERITY_COLORS,
+  SEVERITY_LEVEL_COLORS,
+  API_ENDPOINTS,
+} from "@/constants/traffic";
 
 // Lazy load heavy components
 const FullTrafficGrid = lazy(() =>
@@ -43,9 +34,7 @@ export default function Index() {
   const { data: currentData } = useQuery({
     queryKey: ["currentTraffic"],
     queryFn: async () => {
-      const response = await fetch(
-        "https://traffic-worker.mangalaman93.workers.dev/current",
-      );
+      const response = await fetch(API_ENDPOINTS.CURRENT);
       if (!response.ok) {
         throw new Error("Failed to fetch current traffic data");
       }
@@ -60,9 +49,7 @@ export default function Index() {
   const { data: sustainedData } = useQuery({
     queryKey: ["sustainedTraffic"],
     queryFn: async () => {
-      const response = await fetch(
-        "https://traffic-worker.mangalaman93.workers.dev/sustained",
-      );
+      const response = await fetch(API_ENDPOINTS.SUSTAINED);
       if (!response.ok) {
         throw new Error("Failed to fetch sustained traffic data");
       }

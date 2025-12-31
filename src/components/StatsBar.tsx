@@ -1,24 +1,13 @@
 import { TrafficData } from "@/types/traffic";
+import { calculateSeverityLevel } from "@/utils/trafficUtils";
 
 interface StatsBarProps {
   data: TrafficData[];
   mode?: "traffic" | "severity";
 }
 
-// Helper function to determine severity level (same as in FullTrafficGrid)
-const getSeverityLevel = (
-  cell: TrafficData | undefined,
-): "normal" | "moderate" | "high" => {
-  if (!cell || !cell.latest_severity || !cell.p95 || !cell.p99) return "normal";
-
-  // Handle case when all values are 0
-  if (cell.latest_severity === 0 && cell.p95 === 0 && cell.p99 === 0)
-    return "normal";
-
-  if (cell.latest_severity > cell.p99) return "high";
-  if (cell.latest_severity > cell.p95) return "moderate";
-  return "normal";
-};
+// Helper function to determine severity level
+const getSeverityLevel = calculateSeverityLevel;
 
 export function StatsBar({ data, mode = "traffic" }: StatsBarProps) {
   const stats =
