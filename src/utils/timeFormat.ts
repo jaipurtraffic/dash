@@ -84,3 +84,16 @@ export function formatRangeTime(date: Date): string {
     includeTimeZone: false,
   });
 }
+
+/**
+ * Time format for chart x-axis
+ * Format: "DD/MM HH:MM" (e.g., "31/12 23:23")
+ */
+export function formatChartTime(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
+
+  return `${day}/${month} ${hours}:${minutes}`;
+}

@@ -1,15 +1,17 @@
 import { TrafficData } from "@/types/traffic";
 import { parseISTTimestamp } from "@/utils/timeUtils";
+import { formatChartTime } from "@/utils/timeFormat";
 import { calculateTotalTraffic } from "@/utils/trafficUtils";
 import { MetricType, METRIC_CONFIG, CHART_COLORS } from "./ChartConfig";
 
 export function processChartData(data: TrafficData[], selectedMetric: MetricType) {
   return data.map((point) => {
     const timestamp = parseISTTimestamp(point.ts);
+    const formattedTimestamp = formatChartTime(timestamp);
     const total = calculateTotalTraffic(point);
 
     const baseData = {
-      timestamp,
+      timestamp: formattedTimestamp,
       yellow: point.yellow,
       red: point.red,
       dark_red: point.dark_red,
@@ -22,7 +24,7 @@ export function processChartData(data: TrafficData[], selectedMetric: MetricType
     }
 
     return {
-      timestamp,
+      timestamp: formattedTimestamp,
       [selectedMetric]: baseData[selectedMetric as keyof typeof baseData],
     };
   });
