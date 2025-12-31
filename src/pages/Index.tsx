@@ -8,9 +8,7 @@ import Activity from "lucide-react/dist/esm/icons/activity";
 import BarChart3 from "lucide-react/dist/esm/icons/bar-chart-3";
 import Clock from "lucide-react/dist/esm/icons/clock";
 import { parseISTTimestamp } from "@/utils/timeUtils";
-import {
-  calculateSeverityDifferences,
-} from "@/utils/trafficUtils";
+import { calculateSeverityDifferences } from "@/utils/trafficUtils";
 import {
   TRAFFIC_SEVERITY_COLORS,
   SEVERITY_LEVEL_COLORS,
@@ -173,15 +171,17 @@ export default function Index() {
                 {/* Congested Areas List */}
                 <div className="space-y-2">
                   {congestedData && congestedData.length > 0 ? (
-                    congestedData.slice(0, 10).map((cell, index) => (
-                      <TrafficAreaCard
-                        key={`${cell.x}-${cell.y}`}
-                        cell={cell}
-                        index={index}
-                        severityColors={TRAFFIC_SEVERITY_COLORS}
-                        onDetailsClick={setSelectedCell}
-                      />
-                    ))
+                    congestedData
+                      .slice(0, 10)
+                      .map((cell, index) => (
+                        <TrafficAreaCard
+                          key={`${cell.x}-${cell.y}`}
+                          cell={cell}
+                          index={index}
+                          severityColors={TRAFFIC_SEVERITY_COLORS}
+                          onDetailsClick={() => setSelectedCell(cell)}
+                        />
+                      ))
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <p>No congested areas data available</p>
@@ -241,7 +241,7 @@ export default function Index() {
                         cell={area}
                         index={index}
                         severityLevelColors={SEVERITY_LEVEL_COLORS}
-                        onDetailsClick={setSelectedCell}
+                        onDetailsClick={() => setSelectedCell(area)}
                       />
                     ))
                   ) : (
@@ -296,16 +296,18 @@ export default function Index() {
                 {/* Sustained Areas List */}
                 <div className="space-y-2">
                   {sustainedData && sustainedData.length > 0 ? (
-                    sustainedData.slice(0, 10).map((cell, index) => (
-                      <TrafficAreaCard
-                        key={`${cell.x}-${cell.y}`}
-                        cell={cell}
-                        index={index}
-                        showThresholdP95={true}
-                        severityColors={TRAFFIC_SEVERITY_COLORS}
-                        onDetailsClick={setSelectedCell}
-                      />
-                    ))
+                    sustainedData
+                      .slice(0, 10)
+                      .map((cell, index) => (
+                        <TrafficAreaCard
+                          key={`${cell.x}-${cell.y}`}
+                          cell={cell}
+                          index={index}
+                          showThresholdP95={true}
+                          severityColors={TRAFFIC_SEVERITY_COLORS}
+                          onDetailsClick={() => setSelectedCell(cell)}
+                        />
+                      ))
                   ) : (
                     <div className="text-center py-8 text-muted-foreground">
                       <p>No sustained traffic data available</p>

@@ -105,7 +105,7 @@ export function GridCell({
               "bg-primary/90 text-primary-foreground",
               "rounded-full w-5 h-5",
               "flex items-center justify-center",
-              "text-xs font-bold shadow-lg"
+              "text-xs font-bold shadow-lg",
             )}
           >
             {Array.from(top10Cells).indexOf(cellKey) + 1}

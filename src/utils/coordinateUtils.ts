@@ -13,7 +13,7 @@ const addMetersInLatitude = (latitude: number, meters: number): number => {
 const addMetersInLongitude = (
   latitude: number,
   longitude: number,
-  meters: number
+  meters: number,
 ): number => {
   const metersPerDegreeLng =
     METERS_PER_DEGREE_LAT * Math.cos((latitude * Math.PI) / 180);
@@ -23,17 +23,17 @@ const addMetersInLongitude = (
 // Calculate center coordinates of a grid cell
 export const getCellCenterCoordinates = (
   col: number,
-  row: number
+  row: number,
 ): { lat: number; lng: number } => {
   // Calculate the top-left corner of the cell
   const cellTopLat = addMetersInLatitude(
     JAIPUR_NORTH_WEST_LAT,
-    row * CELL_HEIGHT_METERS
+    row * CELL_HEIGHT_METERS,
   );
   const cellLeftLng = addMetersInLongitude(
     JAIPUR_NORTH_WEST_LAT,
     JAIPUR_NORTH_WEST_LNG,
-    col * CELL_WIDTH_METERS
+    col * CELL_WIDTH_METERS,
   );
 
   // Calculate center by adding half cell dimensions
@@ -41,7 +41,7 @@ export const getCellCenterCoordinates = (
   const centerLng = addMetersInLongitude(
     cellTopLat,
     cellLeftLng,
-    CELL_WIDTH_METERS / 2
+    CELL_WIDTH_METERS / 2,
   );
 
   return { lat: centerLat, lng: centerLng };

@@ -24,10 +24,7 @@ import { GridCell } from "@/components/GridCell";
 import { TrafficLegend } from "@/components/TrafficLegend";
 import { DailyAverageTraffic } from "@/components/DailyAverageTraffic";
 import { SeverityInfo } from "@/components/SeverityInfo";
-import {
-  GRID_DIMENSIONS,
-  API_ENDPOINTS,
-} from "@/constants/traffic";
+import { GRID_DIMENSIONS, API_ENDPOINTS } from "@/constants/traffic";
 
 interface FullTrafficGridProps {
   data: TrafficData[];
@@ -80,11 +77,17 @@ export function FullTrafficGrid({
   initialSelectedCell,
   activeTab = "traffic",
 }: FullTrafficGridProps) {
-  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(initialSelectedCell || null);
+  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(
+    initialSelectedCell || null,
+  );
   const [selectedCoords, setSelectedCoords] = useState<{
     x: number;
     y: number;
-  } | null>(initialSelectedCell ? { x: initialSelectedCell.x, y: initialSelectedCell.y } : null);
+  } | null>(
+    initialSelectedCell
+      ? { x: initialSelectedCell.x, y: initialSelectedCell.y }
+      : null,
+  );
   const [selectedDuration, setSelectedDuration] = useState<string>("24h");
 
   // Fetch historical data when a cell is selected
@@ -98,7 +101,11 @@ export function FullTrafficGrid({
     queryFn: async () => {
       if (!selectedCoords) return [];
 
-      const url = API_ENDPOINTS.HISTORY(selectedCoords.x, selectedCoords.y, selectedDuration);
+      const url = API_ENDPOINTS.HISTORY(
+        selectedCoords.x,
+        selectedCoords.y,
+        selectedDuration,
+      );
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Failed to fetch historical data");
@@ -200,7 +207,7 @@ export function FullTrafficGrid({
                 className={cn(
                   "w-8 border border-border rounded-tl-lg",
                   "flex items-center justify-center",
-                  "text-xs font-mono text-muted-foreground"
+                  "text-xs font-mono text-muted-foreground",
                 )}
                 style={{ height: rowHeight }}
               />
@@ -212,7 +219,8 @@ export function FullTrafficGrid({
                     "flex items-center justify-center",
                     "text-xs font-mono text-muted-foreground",
                     "w-8 h-12 border-l border-b border-border",
-                    row === rows - 1 && "border-l border-b border-r rounded-bl-lg",
+                    row === rows - 1 &&
+                      "border-l border-b border-r rounded-bl-lg",
                   )}
                   style={{ height: rowHeight }}
                 >
@@ -234,7 +242,7 @@ export function FullTrafficGrid({
                       className={cn(
                         "flex items-center justify-center",
                         "text-xs font-mono text-muted-foreground",
-                        "px-1 border border-border"
+                        "px-1 border border-border",
                       )}
                       style={{ height: rowHeight }}
                     >
@@ -250,7 +258,7 @@ export function FullTrafficGrid({
                 className={cn(
                   "relative bg-cover bg-center bg-no-repeat",
                   "rounded-br-lg overflow-hidden",
-                  "border border-border border-t-0"
+                  "border border-border border-t-0",
                 )}
                 style={{
                   backgroundImage: "url(/data/jaipur.jpg)",
@@ -266,7 +274,8 @@ export function FullTrafficGrid({
                       {Array.from({ length: cols }, (_, col) => {
                         const cell = dataMap.get(`${col}-${row}`);
                         const cellKey = `${col}-${row}`;
-                        const isTop10 = highlightTop10 && top10Cells.has(cellKey);
+                        const isTop10 =
+                          highlightTop10 && top10Cells.has(cellKey);
 
                         return (
                           <GridCell
@@ -387,7 +396,10 @@ export function FullTrafficGrid({
 
               {/* Severity Information */}
               <div className="space-y-2">
-                <SeverityInfo selectedCell={selectedCell} activeTab={activeTab} />
+                <SeverityInfo
+                  selectedCell={selectedCell}
+                  activeTab={activeTab}
+                />
               </div>
 
               {/* Daily Average Traffic */}
@@ -421,12 +433,14 @@ export function FullTrafficGrid({
             </div>
           ) : (
             <div className="py-8 text-center text-muted-foreground">
-              <div className={cn(
-                "w-24 h-24 mx-auto mb-4",
-                "rounded-lg bg-muted/30",
-                "border border-border/50",
-                "flex items-center justify-center"
-              )}>
+              <div
+                className={cn(
+                  "w-24 h-24 mx-auto mb-4",
+                  "rounded-lg bg-muted/30",
+                  "border border-border/50",
+                  "flex items-center justify-center",
+                )}
+              >
                 <span className="text-2xl font-bold">0</span>
               </div>
               <p>No unusual traffic detected in this grid</p>

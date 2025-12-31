@@ -10,7 +10,8 @@ import {
   Legend,
 } from "recharts";
 import { TrafficData } from "@/types/traffic";
-import { formatRangeTime } from "@/utils/timeFormat";
+import { formatRangeTime, formatChartTime } from "@/utils/timeFormat";
+import { parseISTTimestamp } from "@/utils/timeUtils";
 import { ChartTooltip } from "./chart/ChartTooltip";
 import { DurationSelector } from "./chart/DurationSelector";
 import { processChartData, getChartLines } from "./chart/ChartDataProcessor";
@@ -108,7 +109,11 @@ export function HistoricalChart({
               strokeOpacity={0.3}
               tick={{ fontSize: 10 }}
               tickLine={false}
-              interval={Math.max(1, Math.floor(chartData.length / 4))}
+              type="number"
+              domain={["dataMin", "dataMax"]}
+              scale="time"
+              tickFormatter={(value) => formatChartTime(new Date(value))}
+              interval="preserveStartEnd"
             />
             <YAxis
               stroke="currentColor"
@@ -144,9 +149,8 @@ export function HistoricalChart({
       {/* Data Summary */}
       <div className="text-xs text-muted-foreground text-center">
         {data.length > 0
-          ? `${formatRangeTime(new Date(data[0].ts))} - ${formatRangeTime(new Date(data[data.length - 1].ts))}`
-          : "No time range available"
-        }
+          ? `${formatRangeTime(parseISTTimestamp(data[0].ts))} - ${formatRangeTime(parseISTTimestamp(data[data.length - 1].ts))}`
+          : "No time range available"}
       </div>
     </div>
   );

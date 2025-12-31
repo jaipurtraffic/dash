@@ -15,7 +15,7 @@ export const METRIC_CONFIG = [
   { value: "all", label: "All Metrics" },
 ] as const;
 
-export type MetricType = typeof METRIC_CONFIG[number]["value"];
+export type MetricType = (typeof METRIC_CONFIG)[number]["value"];
 
 export interface TooltipPayload {
   index: number;

@@ -15,7 +15,7 @@ export type TimeFormatOptions = {
  */
 export function formatStandardTime(
   date: Date,
-  options: TimeFormatOptions = {}
+  options: TimeFormatOptions = {},
 ): string {
   const {
     includeSeconds = true,
@@ -41,7 +41,7 @@ export function formatStandardTime(
   let formatted = date.toLocaleString("en-IN", formatOptions);
 
   // Replace slashes with dashes for consistency
-  formatted = formatted.replace(/\//g, '-');
+  formatted = formatted.replace(/\//g, "-");
 
   // Add timezone if requested and not already included
   if (includeTimeZone && !formatted.includes("IST")) {
@@ -90,10 +90,10 @@ export function formatRangeTime(date: Date): string {
  * Format: "DD/MM HH:MM" (e.g., "31/12 23:23")
  */
 export function formatChartTime(date: Date): string {
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
 
   return `${day}/${month} ${hours}:${minutes}`;
 }

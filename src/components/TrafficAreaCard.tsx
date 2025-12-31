@@ -82,12 +82,13 @@ export function TrafficAreaCard({
               severityLevelColors && cell.severityLevel
                 ? severityLevelColors[cell.severityLevel]
                 : severityColors
-                ? severityColors[severity as keyof typeof severityColors]
-                : ""
+                  ? severityColors[severity as keyof typeof severityColors]
+                  : ""
             }`}
           >
             {severityLevelColors && cell.severityLevel
-              ? cell.severityLevel.charAt(0).toUpperCase() + cell.severityLevel.slice(1)
+              ? cell.severityLevel.charAt(0).toUpperCase() +
+                cell.severityLevel.slice(1)
               : severity.charAt(0).toUpperCase() + severity.slice(1)}
           </div>
         </div>

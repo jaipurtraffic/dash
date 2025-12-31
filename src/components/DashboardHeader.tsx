@@ -62,8 +62,7 @@ export function DashboardHeader({ lastUpdated }: DashboardHeaderProps) {
           {lastUpdated && (
             <div className="text-left sm:text-right">
               <div className="text-xs text-muted-foreground font-mono">
-                Last Updated:{" "}
-                {formatDetailedTime(lastUpdated)}
+                Last Updated: {formatDetailedTime(lastUpdated)}
               </div>
               <div className="text-xs text-primary font-medium">
                 {getHoursAgo(lastUpdated)}

@@ -5,22 +5,21 @@ interface DurationSelectorProps {
   onDurationChange?: (value: string) => void;
 }
 
-export function DurationSelector({ selectedDuration = "24h", onDurationChange }: DurationSelectorProps) {
+export function DurationSelector({
+  selectedDuration = "24h",
+  onDurationChange,
+}: DurationSelectorProps) {
   return (
-    <div className="flex flex-wrap gap-2 mb-4">
+    <select
+      value={selectedDuration}
+      onChange={(e) => onDurationChange?.(e.target.value)}
+      className="px-3 py-1 text-sm bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
+    >
       {Object.entries(DURATION_OPTIONS).map(([value, label]) => (
-        <button
-          key={value}
-          onClick={() => onDurationChange?.(value)}
-          className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${
-            selectedDuration === value
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80"
-          }`}
-        >
+        <option key={value} value={value}>
           {label}
-        </button>
+        </option>
       ))}
-    </div>
+    </select>
   );
 }

@@ -1,5 +1,6 @@
 export const TRAFFIC_SEVERITY_COLORS = {
-  critical: "bg-traffic-dark-red/20 border-traffic-dark-red/50 text-traffic-dark-red",
+  critical:
+    "bg-traffic-dark-red/20 border-traffic-dark-red/50 text-traffic-dark-red",
   high: "bg-traffic-red/20 border-traffic-red/50 text-traffic-red",
   medium: "bg-traffic-yellow/20 border-traffic-yellow/50 text-traffic-yellow",
 } as const;
@@ -32,4 +33,5 @@ export const API_ENDPOINTS = {
     `https://traffic-worker.mangalaman93.workers.dev/history?x=${x}&y=${y}&duration=${duration}`,
 } as const;
 
-export const GOOGLE_MAPS_URL = "https://www.google.com/maps/d/edit?mid=1AW5K34KiZmKo32vtBsmOnzNSU45oQS4";
+export const GOOGLE_MAPS_URL =
+  "https://www.google.com/maps/d/edit?mid=1AW5K34KiZmKo32vtBsmOnzNSU45oQS4";
