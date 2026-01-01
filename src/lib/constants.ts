@@ -10,7 +10,7 @@ export const SEVERITY_LEVEL_COLORS = {
   normal: "bg-muted/20 border-border/50 text-muted-foreground",
 } as const;
 
-export const DURATION_OPTIONS = ["1h", "6h", "12h", "24h", "7d"] as const;
+export const DURATION_OPTIONS = ["1h", "6h", "12h", "24h", "3d", "7d", "14d"] as const;
 
 export const GRID_DIMENSIONS = {
   ROWS: 21,
