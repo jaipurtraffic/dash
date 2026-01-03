@@ -1,9 +1,14 @@
 import { z } from "zod";
+import { GRID_DIMENSIONS } from "./constants";
+
+// Create reusable coordinate validation schemas
+const xCoordinateSchema = z.number().int().min(0).max(GRID_DIMENSIONS.COLS - 1);
+const yCoordinateSchema = z.number().int().min(0).max(GRID_DIMENSIONS.ROWS - 1);
 
 // Schema for historical traffic data API responses
 export const HistoricalTrafficDataSchema = z.object({
-  x: z.number().int().min(0).max(14), // 15 columns (0-14)
-  y: z.number().int().min(0).max(20), // 21 rows (0-20)
+  x: xCoordinateSchema, // 16 columns (0-15)
+  y: yCoordinateSchema, // 24 rows (0-23)
   yellow: z.number().int().min(0),
   red: z.number().int().min(0),
   dark_red: z.number().int().min(0),
@@ -16,8 +21,8 @@ export const HistoricalTrafficDataSchema = z.object({
 
 // Schema for current traffic data API responses
 export const CurrentTrafficDataSchema = z.object({
-  x: z.number().int().min(0).max(14), // 15 columns (0-14)
-  y: z.number().int().min(0).max(20), // 21 rows (0-20)
+  x: xCoordinateSchema, // 16 columns (0-15)
+  y: yCoordinateSchema, // 24 rows (0-23)
   yellow: z.number().int().min(0),
   red: z.number().int().min(0),
   dark_red: z.number().int().min(0),
@@ -30,8 +35,8 @@ export const CurrentTrafficDataSchema = z.object({
 
 // Schema for sustained traffic data API responses
 export const SustainedTrafficDataSchema = z.object({
-  x: z.number().int().min(0).max(14), // 15 columns (0-14)
-  y: z.number().int().min(0).max(20), // 21 rows (0-20)
+  x: xCoordinateSchema, // 16 columns (0-15)
+  y: yCoordinateSchema, // 24 rows (0-23)
   yellow: z.number().int().min(0),
   red: z.number().int().min(0),
   dark_red: z.number().int().min(0),

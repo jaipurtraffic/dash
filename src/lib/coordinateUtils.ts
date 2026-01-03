@@ -7,15 +7,16 @@ import { GRID_DIMENSIONS } from "./constants";
 // Jaipur boundaries as provided
 export const JAIPUR_BOUNDARIES = {
   NORTH_WEST_LAT: 26.99,
-  SOUTH_EAST_LAT: 26.78,
+  SOUTH_EAST_LAT: 26.75,
   NORTH_WEST_LNG: 75.65,
-  SOUTH_EAST_LNG: 75.92,
+  SOUTH_EAST_LNG: 75.94,
 } as const;
+
 
 // Grid dimensions in meters (adjusted to match expected output)
 export const GRID_METERS = {
-  HEIGHT: 23100, // Adjusted: 1100 * 21 = 23100 to match expected lat step
-  WIDTH: 26998.580215450143, // Precisely calculated to match expected lng step
+  HEIGHT: 26400, // Adjusted: 1100 * 24 = 26400 to match expected lat step
+  WIDTH: 28798.72421733352, // Precisely calculated to match expected lng step
 } as const;
 
 // Earth constants for coordinate calculations

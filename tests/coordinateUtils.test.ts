@@ -63,21 +63,21 @@ const runner = new TestRunner();
 // Test boundary constants
 runner.test('JAIPUR_BOUNDARIES constants should be correct', () => {
   runner.assertEqual(JAIPUR_BOUNDARIES.NORTH_WEST_LAT, 26.99, 'Northwest latitude');
-  runner.assertEqual(JAIPUR_BOUNDARIES.SOUTH_EAST_LAT, 26.78, 'Southeast latitude');
+  runner.assertEqual(JAIPUR_BOUNDARIES.SOUTH_EAST_LAT, 26.75, 'Southeast latitude');
   runner.assertEqual(JAIPUR_BOUNDARIES.NORTH_WEST_LNG, 75.65, 'Northwest longitude');
-  runner.assertEqual(JAIPUR_BOUNDARIES.SOUTH_EAST_LNG, 75.92, 'Southeast longitude');
+  runner.assertEqual(JAIPUR_BOUNDARIES.SOUTH_EAST_LNG, 75.94, 'Southeast longitude');
 });
 
 // Test grid meter constants
 runner.test('GRID_METERS constants should be correct', () => {
-  runner.assertEqual(GRID_METERS.HEIGHT, 23100, 'Grid height in meters');
-  runner.assertClose(GRID_METERS.WIDTH, 26998.580215450143, 0.001, 'Grid width in meters');
+  runner.assertEqual(GRID_METERS.HEIGHT, 26400, 'Grid height in meters');
+  runner.assertClose(GRID_METERS.WIDTH, 28798.72421733352, 0.001, 'Grid width in meters');
 });
 
 // Test grid dimensions
 runner.test('GRID_DIMENSIONS should be correct', () => {
-  runner.assertEqual(GRID_DIMENSIONS.ROWS, 21, 'Number of rows');
-  runner.assertEqual(GRID_DIMENSIONS.COLS, 15, 'Number of columns');
+  runner.assertEqual(GRID_DIMENSIONS.ROWS, 24, 'Number of rows');
+  runner.assertEqual(GRID_DIMENSIONS.COLS, 16, 'Number of columns');
 });
 
 // Test corner coordinates
@@ -88,41 +88,41 @@ runner.test('Should calculate northwest corner correctly', () => {
 });
 
 runner.test('Should calculate northeast corner correctly', () => {
-  const result = getCellCenterCoordinates(14, 0);
+  const result = getCellCenterCoordinates(15, 0);
   runner.assertClose(result.lat, 26.985059, 0.0001, 'Northeast corner latitude');
-  runner.assertClose(result.lng, 75.913105, 0.0001, 'Northeast corner longitude');
+  runner.assertClose(result.lng, 75.931237, 0.0001, 'Northeast corner longitude');
 });
 
 runner.test('Should calculate southwest corner correctly', () => {
-  const result = getCellCenterCoordinates(0, 20);
-  runner.assertClose(result.lat, 26.787431, 0.0001, 'Southwest corner latitude');
-  runner.assertClose(result.lng, 75.659057, 0.0001, 'Southwest corner longitude');
+  const result = getCellCenterCoordinates(0, 23);
+  runner.assertClose(result.lat, 26.757787, 0.0001, 'Southwest corner latitude');
+  runner.assertClose(result.lng, 75.659054, 0.0001, 'Southwest corner longitude');
 });
 
 runner.test('Should calculate southeast corner correctly', () => {
-  const result = getCellCenterCoordinates(14, 20);
-  runner.assertClose(result.lat, 26.787431, 0.0001, 'Southeast corner latitude');
-  runner.assertClose(result.lng, 75.912645, 0.0001, 'Southeast corner longitude');
+  const result = getCellCenterCoordinates(15, 23);
+  runner.assertClose(result.lat, 26.757787, 0.0001, 'Southeast corner latitude');
+  runner.assertClose(result.lng, 75.930673, 0.0001, 'Southeast corner longitude');
 });
 
 // Test coordinate patterns
 runner.test('Should maintain constant latitude across same row', () => {
   const row0 = getCellCenterCoordinates(0, 0);
-  const row0End = getCellCenterCoordinates(14, 0);
+  const row0End = getCellCenterCoordinates(15, 0);
   runner.assertClose(row0.lat, row0End.lat, 0.000001, 'Latitude should be same across row 0');
 
   const row10 = getCellCenterCoordinates(0, 10);
-  const row10End = getCellCenterCoordinates(14, 10);
+  const row10End = getCellCenterCoordinates(15, 10);
   runner.assertClose(row10.lat, row10End.lat, 0.000001, 'Latitude should be same across row 10');
 });
 
 runner.test('Should maintain nearly constant longitude across same column', () => {
   const col0 = getCellCenterCoordinates(0, 0);
-  const col0End = getCellCenterCoordinates(0, 20);
+  const col0End = getCellCenterCoordinates(0, 23);
   runner.assertClose(col0.lng, col0End.lng, 0.001, 'Longitude should be nearly same across column 0');
 
   const col7 = getCellCenterCoordinates(7, 0);
-  const col7End = getCellCenterCoordinates(7, 20);
+  const col7End = getCellCenterCoordinates(7, 23);
   runner.assertClose(col7.lng, col7End.lng, 0.001, 'Longitude should be nearly same across column 7');
 });
 
@@ -153,15 +153,15 @@ runner.test('Should match expected coordinates for sample cells', () => {
   for (const testCase of testCases) {
     const result = getCellCenterCoordinates(testCase.x, testCase.y);
     runner.assertClose(
-      result.lat, 
-      testCase.expectedLat, 
-      0.0001, 
+      result.lat,
+      testCase.expectedLat,
+      0.0001,
       `Latitude for cell (${testCase.x}, ${testCase.y})`
     );
     runner.assertClose(
-      result.lng, 
-      testCase.expectedLng, 
-      0.0001, 
+      result.lng,
+      testCase.expectedLng,
+      0.0001,
       `Longitude for cell (${testCase.x}, ${testCase.y})`
     );
   }

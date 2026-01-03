@@ -13,8 +13,8 @@ export const SEVERITY_LEVEL_COLORS = {
 export const DURATION_OPTIONS = ["1h", "6h", "12h", "24h", "3d", "7d", "14d"] as const;
 
 export const GRID_DIMENSIONS = {
-  ROWS: 21,
-  COLS: 15,
+  ROWS: 24,
+  COLS: 16,
   ROW_HEIGHT: 53.3,
   ASPECT_RATIO: 12750 / 10920,
 } as const;
@@ -26,14 +26,14 @@ const API_BASE = "https://traffic-worker.mangalaman93.workers.dev";
  * @throws Error if parameters are invalid
  */
 const buildHistoryUrl = (x: number, y: number, duration: string): string => {
-  // Validate x coordinate (must be integer between 0 and 14)
-  if (!Number.isInteger(x) || x < 0 || x > 14) {
-    throw new Error(`Invalid x coordinate: ${x}. Must be an integer between 0 and 14.`);
+  // Validate x coordinate (must be integer between 0 and GRID_DIMENSIONS.COLS-1)
+  if (!Number.isInteger(x) || x < 0 || x > GRID_DIMENSIONS.COLS - 1) {
+    throw new Error(`Invalid x coordinate: ${x}. Must be an integer between 0 and ${GRID_DIMENSIONS.COLS - 1}.`);
   }
 
-  // Validate y coordinate (must be integer between 0 and 20)
-  if (!Number.isInteger(y) || y < 0 || y > 20) {
-    throw new Error(`Invalid y coordinate: ${y}. Must be an integer between 0 and 20.`);
+  // Validate y coordinate (must be integer between 0 and GRID_DIMENSIONS.ROWS-1)
+  if (!Number.isInteger(y) || y < 0 || y > GRID_DIMENSIONS.ROWS - 1) {
+    throw new Error(`Invalid y coordinate: ${y}. Must be an integer between 0 and ${GRID_DIMENSIONS.ROWS - 1}.`);
   }
 
   // Validate duration against whitelist
