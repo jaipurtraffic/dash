@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "test": "node tests/timeUtils.test.js"
+    "test": "npx tsx tests/timeUtils.test.ts && npx tsx tests/coordinateUtils.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
