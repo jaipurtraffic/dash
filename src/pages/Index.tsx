@@ -148,9 +148,9 @@ const TabContent = ({
   selectedCell,
   setSelectedCell,
 }: TabContentProps) => (
-  <div className="space-y-3">
+  <div className="space-y-4">
     <Suspense fallback={<div className="h-12 bg-muted/20 animate-pulse rounded-lg" />}>
-      <div className="mt-3">
+      <div className="mb-3">
         <StatsBar data={data} mode={mode} />
       </div>
     </Suspense>
@@ -205,50 +205,15 @@ export default function Index() {
 
   return (
     <div className="min-h-screen bg-background">
-      <DashboardHeader lastUpdated={lastUpdated} />
+      <DashboardHeader 
+        lastUpdated={lastUpdated} 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+      />
 
       <main className="container py-2 space-y-3">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full max-w-lg grid-cols-3 h-auto sm:h-10 p-1 sm:p-1">
-            <TabsTrigger
-              value="traffic"
-              className={cn(
-                "gap-1 sm:gap-2 flex-col sm:flex-row",
-                "px-2 py-2 sm:px-3 sm:py-1.5",
-                "min-h-[3rem] sm:min-h-0"
-              )}
-            >
-              <Activity className="w-4 h-4 flex-shrink-0" />
-              <span className="text-xs sm:text-sm leading-tight text-center">Traffic Analysis</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="severity"
-              className={cn(
-                "gap-1 sm:gap-2 flex-col sm:flex-row",
-                "px-2 py-2 sm:px-3 sm:py-1.5",
-                "min-h-[3rem] sm:min-h-0"
-              )}
-            >
-              <BarChart3 className="w-4 h-4 flex-shrink-0" />
-              <span className="text-xs sm:text-sm leading-tight text-center">
-                Severity Analysis
-              </span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="sustained"
-              className={cn(
-                "gap-1 sm:gap-2 flex-col sm:flex-row",
-                "px-2 py-2 sm:px-3 sm:py-1.5",
-                "min-h-[3rem] sm:min-h-0"
-              )}
-            >
-              <Clock className="w-4 h-4 flex-shrink-0" />
-              <span className="text-xs sm:text-sm leading-tight text-center">
-                Sustained Traffic
-              </span>
-            </TabsTrigger>
-          </TabsList>
-
+        {/* Tabs moved to header */}
+        <Tabs value={activeTab} className="w-full">
           <TabsContent value="traffic">
             <TabContent
               data={currentData || []}
