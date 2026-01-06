@@ -6,6 +6,7 @@ import {
   rectangle,
   LatLngBoundsExpression,
 } from "leaflet";
+import L from "leaflet";
 import { TrafficData } from "@/lib/types";
 import { GRID_BOUNDS, getCellBounds } from "@/lib/gridBoundaries";
 import {
@@ -28,15 +29,11 @@ function getCellColor(
 ): {
   fillColor: string;
   fillOpacity: number;
-  borderColor: string;
-  borderWeight: number;
 } {
   if (!cell) {
     return {
       fillColor: "transparent",
       fillOpacity: 0,
-      borderColor: "rgba(128, 128, 128, 0.3)",
-      borderWeight: 1,
     };
   }
 
@@ -49,23 +46,17 @@ function getCellColor(
       return {
         fillColor: "#dc2626",
         fillOpacity: isTop10 ? 0.7 : 0.5,
-        borderColor: isTop10 ? "#fbbf24" : "#dc2626",
-        borderWeight: isTop10 ? 3 : 1,
       };
     }
     if (p95Diff > 0) {
       return {
         fillColor: "#ca8a04",
         fillOpacity: isTop10 ? 0.7 : 0.5,
-        borderColor: isTop10 ? "#fbbf24" : "#ca8a04",
-        borderWeight: isTop10 ? 3 : 1,
       };
     }
     return {
       fillColor: "transparent",
       fillOpacity: 0,
-      borderColor: "rgba(128, 128, 128, 0.3)",
-      borderWeight: 1,
     };
   }
 
@@ -74,8 +65,6 @@ function getCellColor(
     return {
       fillColor: "transparent",
       fillOpacity: 0,
-      borderColor: "rgba(128, 128, 128, 0.3)",
-      borderWeight: 1,
     };
   }
 
@@ -83,32 +72,24 @@ function getCellColor(
     return {
       fillColor: "#7f1d1d",
       fillOpacity: isTop10 ? 0.8 : 0.6,
-      borderColor: isTop10 ? "#fbbf24" : "#7f1d1d",
-      borderWeight: isTop10 ? 3 : 1,
     };
   }
   if (cell.red > 0) {
     return {
       fillColor: "#dc2626",
       fillOpacity: isTop10 ? 0.7 : 0.5,
-      borderColor: isTop10 ? "#fbbf24" : "#dc2626",
-      borderWeight: isTop10 ? 3 : 1,
     };
   }
   if (cell.yellow > 0) {
     return {
       fillColor: "#eab308",
       fillOpacity: isTop10 ? 0.7 : 0.5,
-      borderColor: isTop10 ? "#fbbf24" : "#eab308",
-      borderWeight: isTop10 ? 3 : 1,
     };
   }
 
   return {
     fillColor: "transparent",
     fillOpacity: 0,
-    borderColor: "rgba(128, 128, 128, 0.3)",
-    borderWeight: 1,
   };
 }
 
@@ -155,6 +136,38 @@ export function TrafficMapGrid({
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(mapInstance);
 
+    // Add CSS for rounded corners, grid numbers, and modal z-index
+    const style = document.createElement('style');
+    style.textContent = `
+      .grid-cell svg path {
+        rx: 3px !important;
+        ry: 3px !important;
+      }
+      .grid-number {
+        z-index: 1000 !important;
+      }
+      .grid-number div {
+        font-family: system-ui, -apple-system, sans-serif !important;
+        background: hsl(var(--primary)) !important;
+        color: hsl(var(--primary-foreground)) !important;
+        border-color: hsl(var(--primary-foreground)) !important;
+      }
+      /* Ensure modal appears above map */
+      [data-radix-dialog-overlay] {
+        z-index: 9999 !important;
+      }
+      [data-radix-dialog-content] {
+        z-index: 10000 !important;
+      }
+      .leaflet-container {
+        z-index: 1 !important;
+      }
+      .leaflet-control-container {
+        z-index: 2 !important;
+      }
+    `;
+    document.head.appendChild(style);
+
     mapInstance.fitBounds(bounds, { padding: [10, 10] });
     mapRef.current = mapInstance;
     setIsMapReady(true);
@@ -171,12 +184,16 @@ export function TrafficMapGrid({
 
     const mapInstance = mapRef.current;
 
-    // Clear existing rectangles
+    // Clear existing rectangles and numbers
     mapInstance.eachLayer((layer) => {
-      const layerWithCustomOptions = layer as L.Layer & {
-        options?: { className?: string };
-      };
-      if (layerWithCustomOptions.options?.className === "grid-cell") {
+      const layerWithCustomOptions =
+        layer as L.Layer & {
+          options?: { className?: string };
+        };
+      if (
+        layerWithCustomOptions.options?.className === "grid-cell" ||
+        layerWithCustomOptions.options?.className === "grid-number"
+      ) {
         mapInstance.removeLayer(layer);
       }
     });
@@ -195,12 +212,58 @@ export function TrafficMapGrid({
         const colors = getCellColor(cell, mode, isTop10);
 
         const rect = rectangle(bounds, {
-          color: colors.borderColor,
-          weight: colors.borderWeight,
+          color: "#000000",
+          weight: 1,
           fillColor: colors.fillColor,
           fillOpacity: colors.fillOpacity,
           className: "grid-cell",
         });
+
+        // Apply rounded corners via CSS
+        rect.on('add', function() {
+          const element = this.getElement();
+          if (element) {
+            element.style.borderRadius = '4px';
+          }
+        });
+
+        // Add grid number for top 10 cells
+        if (isTop10) {
+          const rank = Array.from(top10Cells).indexOf(cellKey) + 1;
+          const center = rect.getBounds().getCenter();
+          
+          // Create a custom div icon for the number using theme colors
+          const numberIcon = L.divIcon({
+            html: `<div style="
+              background: hsl(var(--primary)) !important;
+              color: hsl(var(--primary-foreground)) !important;
+              border-radius: 50% !important;
+              width: 24px !important;
+              height: 24px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              font-size: 12px !important;
+              font-weight: bold !important;
+              box-shadow: 0 2px 6px rgba(0,0,0,0.4) !important;
+              pointer-events: none !important;
+              position: absolute !important;
+              left: 50% !important;
+              top: 50% !important;
+              transform: translate(-50%, -50%) !important;
+              z-index: 1000 !important;
+              border: 2px solid hsl(var(--primary-foreground)) !important;
+              font-family: system-ui, -apple-system, sans-serif !important;
+            ">${rank}</div>`,
+            className: "grid-number",
+            iconSize: [1, 1], // Minimal size since we're positioning absolutely
+            iconAnchor: [0.5, 0.5],
+          });
+          
+          const numberMarker = L.marker(center, { icon: numberIcon });
+          numberMarker.setZIndexOffset(1000);
+          numberMarker.addTo(mapInstance);
+        }
 
         rect.on("click", () => onCellClick(x, y));
         rect.addTo(mapInstance);
