@@ -24,10 +24,10 @@ export const GRID_BOUNDS = {
 } as const;
 
 /**
- * Get the bounds for a specific cell (x, y)
+ * Get bounds for a specific cell (x, y)
  * @param x Column index (0-15)
  * @param y Row index (0-23)
- * @returns LatLng bounds for the cell
+ * @returns LatLng bounds for cell
  */
 export function getCellBounds(
   x: number,
@@ -47,7 +47,7 @@ export function getCellBounds(
 }
 
 /**
- * Get the center coordinates for a specific cell
+ * Get center coordinates for a specific cell
  * @param x Column index (0-15)
  * @param y Row index (0-23)
  * @returns Center lat/lng for the cell
@@ -60,16 +60,6 @@ export function getCellCenter(
   return {
     lat: (bounds.north + bounds.south) / 2,
     lng: (bounds.west + bounds.east) / 2,
-  };
-}
-
-/**
- * Get the center of the entire grid
- */
-export function getGridCenter(): { lat: number; lng: number } {
-  return {
-    lat: (GRID_BOUNDS.NORTH + GRID_BOUNDS.SOUTH) / 2,
-    lng: (GRID_BOUNDS.WEST + GRID_BOUNDS.EAST) / 2,
   };
 }
 

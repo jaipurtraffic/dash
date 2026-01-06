@@ -152,13 +152,6 @@ export function TrafficMapGrid({
         color: hsl(var(--primary-foreground)) !important;
         border-color: hsl(var(--primary-foreground)) !important;
       }
-      /* Ensure modal appears above map */
-      [data-radix-dialog-overlay] {
-        z-index: 9999 !important;
-      }
-      [data-radix-dialog-content] {
-        z-index: 10000 !important;
-      }
       .leaflet-container {
         z-index: 1 !important;
       }

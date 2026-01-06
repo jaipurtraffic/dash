@@ -6,19 +6,6 @@ import {
 
 export const createCellKey = (x: number, y: number): string => `${x}-${y}`;
 
-export const createDefaultCell = (x: number, y: number): TrafficData => ({
-  x,
-  y,
-  yellow: 0,
-  red: 0,
-  dark_red: 0,
-  latest_severity: 0,
-  p95: 0,
-  p99: 0,
-  threshold_p95: 0,
-  ts: null,
-});
-
 export const getTop10SeverityCells = (data: TrafficData[]): Set<string> => {
   const processedData = data
     .filter((cell) => cell.latest_severity && cell.p95 && cell.p99)

@@ -13,20 +13,6 @@ const yCoordinateSchema = z
   .min(0)
   .max(GRID_DIMENSIONS.ROWS - 1);
 
-// Schema for historical traffic data API responses
-export const HistoricalTrafficDataSchema = z.object({
-  x: xCoordinateSchema, // 16 columns (0-15)
-  y: yCoordinateSchema, // 24 rows (0-23)
-  yellow: z.number().int().min(0),
-  red: z.number().int().min(0),
-  dark_red: z.number().int().min(0),
-  ts: z.string().nullable(),
-  latest_severity: z.number().min(0).optional(),
-  p95: z.number().min(0).optional(),
-  p99: z.number().min(0).optional(),
-  threshold_p95: z.number().min(0).optional(),
-});
-
 // Schema for current traffic data API responses
 export const CurrentTrafficDataSchema = z.object({
   x: xCoordinateSchema, // 16 columns (0-15)
@@ -61,9 +47,6 @@ export const CurrentTrafficDataArraySchema = z.array(CurrentTrafficDataSchema);
 export const SustainedTrafficDataArraySchema = z.array(
   SustainedTrafficDataSchema,
 );
-export const HistoricalTrafficDataArraySchema = z.array(
-  HistoricalTrafficDataSchema,
-);
 
 // Type inference from schemas
 export type ValidatedCurrentTrafficData = z.infer<
@@ -71,9 +54,6 @@ export type ValidatedCurrentTrafficData = z.infer<
 >;
 export type ValidatedSustainedTrafficData = z.infer<
   typeof SustainedTrafficDataSchema
->;
-export type ValidatedHistoricalTrafficData = z.infer<
-  typeof HistoricalTrafficDataSchema
 >;
 export type ValidatedTrafficData = ValidatedCurrentTrafficData;
 
@@ -89,21 +69,6 @@ export function validateCurrentTrafficData(
   } catch (error) {
     console.error("Current API response validation failed:", error);
     throw new Error("Invalid current traffic data received from API");
-  }
-}
-
-/**
- * Validates historical traffic data array from API response
- * @throws Error if validation fails
- */
-export function validateHistoricalTrafficData(
-  data: unknown,
-): ValidatedHistoricalTrafficData[] {
-  try {
-    return HistoricalTrafficDataArraySchema.parse(data);
-  } catch (error) {
-    console.error("Historical API response validation failed:", error);
-    throw new Error("Invalid historical traffic data received from API");
   }
 }
 

@@ -11,16 +11,6 @@ export const SEVERITY_LEVEL_COLORS = {
   normal: "bg-muted/20 border-border/50 text-muted-foreground",
 } as const;
 
-export const DURATION_OPTIONS = [
-  "1h",
-  "6h",
-  "12h",
-  "24h",
-  "3d",
-  "7d",
-  "14d",
-] as const;
-
 export const GRID_DIMENSIONS = {
   ROWS: 24,
   COLS: 16,
@@ -30,52 +20,9 @@ export const GRID_DIMENSIONS = {
 
 const API_BASE = "https://traffic-worker.mangalaman93.workers.dev";
 
-/**
- * Validates and sanitizes URL parameters for the history API endpoint
- * @throws Error if parameters are invalid
- */
-const buildHistoryUrl = (x: number, y: number, duration: string): string => {
-  // Validate x coordinate (must be integer between 0 and
-  // GRID_DIMENSIONS.COLS-1)
-  if (!Number.isInteger(x) || x < 0 || x > GRID_DIMENSIONS.COLS - 1) {
-    throw new Error(
-      `Invalid x coordinate: ${x}. Must be an integer between 0 and ${
-        GRID_DIMENSIONS.COLS - 1
-      }.`,
-    );
-  }
-
-  // Validate y coordinate (must be integer between 0 and
-  // GRID_DIMENSIONS.ROWS-1)
-  if (!Number.isInteger(y) || y < 0 || y > GRID_DIMENSIONS.ROWS - 1) {
-    throw new Error(
-      `Invalid y coordinate: ${y}. Must be an integer between 0 and ${
-        GRID_DIMENSIONS.ROWS - 1
-      }.`,
-    );
-  }
-
-  // Validate duration against whitelist
-  if (
-    !DURATION_OPTIONS.includes(duration as (typeof DURATION_OPTIONS)[number])
-  ) {
-    throw new Error(
-      `Invalid duration: ${duration}. Must be one of: ${DURATION_OPTIONS.join(
-        ", ",
-      )}`,
-    );
-  }
-
-  // Use encodeURIComponent for all user-controlled values
-  return `${API_BASE}/history?x=${encodeURIComponent(
-    x,
-  )}&y=${encodeURIComponent(y)}&duration=${encodeURIComponent(duration)}`;
-};
-
 export const API_ENDPOINTS = {
   CURRENT: `${API_BASE}/current`,
   SUSTAINED: `${API_BASE}/sustained`,
-  HISTORY: buildHistoryUrl,
 } as const;
 
 export const GOOGLE_MAPS_URL =

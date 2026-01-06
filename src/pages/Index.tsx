@@ -1,6 +1,6 @@
 import { useState, lazy, Suspense, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { TrafficAreaCard } from "@/components/TrafficAreaCard";
 import { TrafficData } from "@/lib/types";
@@ -8,13 +8,11 @@ import {
   validateCurrentTrafficData,
   validateSustainedTrafficData,
 } from "@/lib/validation";
-import { Activity, BarChart3, Clock } from "lucide-react";
 import { parseISTTimestamp } from "@/lib/timeUtils";
 import {
   calculateSeverityDifferences,
   calculateTotalTraffic,
 } from "@/lib/trafficUtils";
-import { cn } from "@/lib/cn";
 import {
   TRAFFIC_SEVERITY_COLORS,
   SEVERITY_LEVEL_COLORS,
@@ -149,8 +147,6 @@ interface TabContentProps {
   mode?: "traffic" | "severity";
   highlightTop10?: boolean;
   activeTab?: string;
-  selectedCell?: TrafficData | null;
-  setSelectedCell?: (cell: TrafficData | null) => void;
 }
 
 const TabContent = ({
@@ -158,8 +154,6 @@ const TabContent = ({
   mode,
   highlightTop10,
   activeTab,
-  selectedCell,
-  setSelectedCell,
 }: TabContentProps) => (
   <div className="space-y-4">
     <Suspense
@@ -187,7 +181,6 @@ const TabContent = ({
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("traffic");
-  const [selectedCell, setSelectedCell] = useState<TrafficData | null>(null);
 
   const { data: currentData } = useQuery({
     queryKey: ["currentTraffic"],
@@ -240,8 +233,6 @@ export default function Index() {
               data={currentData || []}
               highlightTop10={true}
               activeTab={activeTab}
-              selectedCell={selectedCell}
-              setSelectedCell={setSelectedCell}
             />
             <Suspense
               fallback={
@@ -262,9 +253,7 @@ export default function Index() {
                 cols={GRID_DIMENSIONS.COLS}
                 mode="traffic"
                 highlightTop10={true}
-                initialSelectedCell={selectedCell}
                 activeTab={activeTab}
-                onDialogClose={() => setSelectedCell?.(null)}
                 topAreasList={
                   <TopAreasList
                     areas={topCongestedAreas}
@@ -272,7 +261,7 @@ export default function Index() {
                     description="Most congested traffic areas right now"
                     emptyMessage="No congested areas data available"
                     severityColors={TRAFFIC_SEVERITY_COLORS}
-                    onDetailsClick={setSelectedCell}
+                    onDetailsClick={() => {}}
                   />
                 }
               />
@@ -285,8 +274,6 @@ export default function Index() {
               mode="severity"
               highlightTop10={true}
               activeTab={activeTab}
-              selectedCell={selectedCell}
-              setSelectedCell={setSelectedCell}
             />
             <Suspense
               fallback={
@@ -307,9 +294,7 @@ export default function Index() {
                 cols={GRID_DIMENSIONS.COLS}
                 mode="severity"
                 highlightTop10={true}
-                initialSelectedCell={selectedCell}
                 activeTab={activeTab}
-                onDialogClose={() => setSelectedCell?.(null)}
                 topAreasList={
                   <TopAreasList
                     areas={topSeverityAreas}
@@ -317,7 +302,7 @@ export default function Index() {
                     description="Areas with highest severity above historical thresholds"
                     emptyMessage="No severity anomalies data available"
                     severityLevelColors={SEVERITY_LEVEL_COLORS}
-                    onDetailsClick={setSelectedCell}
+                    onDetailsClick={() => {}}
                   />
                 }
               />
@@ -329,8 +314,6 @@ export default function Index() {
               data={sustainedData || []}
               highlightTop10={true}
               activeTab={activeTab}
-              selectedCell={selectedCell}
-              setSelectedCell={setSelectedCell}
             />
             <Suspense
               fallback={
@@ -350,9 +333,7 @@ export default function Index() {
                 rows={GRID_DIMENSIONS.ROWS}
                 cols={GRID_DIMENSIONS.COLS}
                 highlightTop10={true}
-                initialSelectedCell={selectedCell}
                 activeTab={activeTab}
-                onDialogClose={() => setSelectedCell?.(null)}
                 topAreasList={
                   <TopAreasList
                     areas={(sustainedData || []).slice(0, 10)}
@@ -361,7 +342,7 @@ export default function Index() {
                     emptyMessage="No sustained traffic data available"
                     showThresholdP95={true}
                     severityColors={TRAFFIC_SEVERITY_COLORS}
-                    onDetailsClick={setSelectedCell}
+                    onDetailsClick={() => {}}
                   />
                 }
               />
