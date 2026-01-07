@@ -1,5 +1,6 @@
 import { useState, lazy, Suspense, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { DashboardHeader } from "@/components/DashboardHeader";
 import { TrafficAreaCard } from "@/components/TrafficAreaCard";
@@ -102,6 +103,7 @@ const TopAreasList = ({
   severityColors,
   severityLevelColors,
   showThresholdP95,
+  onDetailsClick,
 }: {
   areas: TrafficData[];
   title: string;
@@ -110,6 +112,7 @@ const TopAreasList = ({
   severityColors?: typeof TRAFFIC_SEVERITY_COLORS;
   severityLevelColors?: typeof SEVERITY_LEVEL_COLORS;
   showThresholdP95?: boolean;
+  onDetailsClick?: (cell: TrafficData) => void;
 }) => (
   <div className="space-y-3">
     <div className="flex items-center justify-between">
@@ -128,6 +131,7 @@ const TopAreasList = ({
             severityColors={severityColors}
             severityLevelColors={severityLevelColors}
             showThresholdP95={showThresholdP95}
+            onDetailsClick={() => onDetailsClick?.(cell)}
           />
         ))
       ) : (
@@ -165,6 +169,11 @@ const TabContent = ({ data, mode }: TabContentProps) => (
 
 export default function Index() {
   const [activeTab, setActiveTab] = useState("traffic");
+  const navigate = useNavigate();
+
+  const handleGridClick = (x: number, y: number) => {
+    navigate(`/history?x=${x}&y=${y}`);
+  };
 
   const {
     data: currentData,
@@ -301,6 +310,7 @@ export default function Index() {
                 data={currentData || []}
                 mode="traffic"
                 highlightTop10={true}
+                onCellClick={handleGridClick}
                 topAreasList={
                   <TopAreasList
                     areas={topCongestedAreas}
@@ -308,6 +318,9 @@ export default function Index() {
                     description="Most congested traffic areas right now"
                     emptyMessage="No congested areas data available"
                     severityColors={TRAFFIC_SEVERITY_COLORS}
+                    onDetailsClick={(cell) =>
+                      navigate(`/history?x=${cell.x}&y=${cell.y}`)
+                    }
                   />
                 }
               />
@@ -327,6 +340,7 @@ export default function Index() {
                 data={currentData || []}
                 mode="severity"
                 highlightTop10={true}
+                onCellClick={handleGridClick}
                 topAreasList={
                   <TopAreasList
                     areas={topSeverityAreas}
@@ -334,6 +348,9 @@ export default function Index() {
                     description="Areas with highest severity above historical thresholds"
                     emptyMessage="No severity anomalies data available"
                     severityLevelColors={SEVERITY_LEVEL_COLORS}
+                    onDetailsClick={(cell) =>
+                      navigate(`/history?x=${cell.x}&y=${cell.y}`)
+                    }
                   />
                 }
               />
@@ -352,6 +369,7 @@ export default function Index() {
               <FullTrafficGrid
                 data={sustainedData || []}
                 highlightTop10={true}
+                onCellClick={handleGridClick}
                 topAreasList={
                   <TopAreasList
                     areas={(sustainedData || []).slice(0, 10)}
@@ -360,6 +378,9 @@ export default function Index() {
                     emptyMessage="No sustained traffic data available"
                     showThresholdP95={true}
                     severityColors={TRAFFIC_SEVERITY_COLORS}
+                    onDetailsClick={(cell) =>
+                      navigate(`/history?x=${cell.x}&y=${cell.y}`)
+                    }
                   />
                 }
               />

@@ -23,6 +23,7 @@ const API_BASE = "https://traffic-worker.mangalaman93.workers.dev";
 export const API_ENDPOINTS = {
   CURRENT: `${API_BASE}/current`,
   SUSTAINED: `${API_BASE}/sustained`,
+  HISTORY: `${API_BASE}/history`,
 } as const;
 
 export const GOOGLE_MAPS_URL =

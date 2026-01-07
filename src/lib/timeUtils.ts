@@ -2,20 +2,44 @@ export function parseISTTimestamp(timestamp: string | null): Date {
   if (!timestamp) return new Date();
 
   try {
+    let date: Date;
+
     // Handle different timestamp formats
     if (timestamp.includes("T")) {
-      // ISO format: 2025-12-31T16:11:30.000Z
-      // The API sends IST timestamps with Z suffix, so we need to remove Z and treat as local time
+      // ISO format: 2025-12-31T16:11:30.000Z or similar
+      // All timestamps from API should be treated as IST, even if they have Z suffix
       if (timestamp.endsWith("Z")) {
-        // Remove Z suffix and parse as local time (IST)
+        // Remove Z suffix and parse as IST (local time)
         const timestampWithoutZ = timestamp.slice(0, -1);
-        return new Date(timestampWithoutZ);
+        date = new Date(timestampWithoutZ);
+      } else {
+        // Parse as is, but ensure it's treated as IST
+        date = new Date(timestamp);
       }
-      return new Date(timestamp);
     } else {
       // Custom format: 2025-12-31 21:41:30
-      return new Date(timestamp.replace(" ", "T"));
+      date = new Date(timestamp.replace(" ", "T"));
     }
+
+    // Ensure the parsed date is treated as IST
+    // If the date was parsed as UTC, convert it to IST equivalent
+    if (timestamp.endsWith("Z") || timestamp.includes("T")) {
+      // The date object was created from what should be IST time
+      // JavaScript Date constructor treats ISO strings without Z as local time
+      // and with Z as UTC. Since we want IST, we need to adjust if it was parsed as UTC
+      if (timestamp.endsWith("Z")) {
+        // We already removed Z, so it's parsed as local time (IST) - good
+        return date;
+      } else {
+        // Check if it might be UTC format - if so, convert to IST
+        // IST is UTC+5:30, so subtract 5.5 hours from UTC to get IST
+        const istOffset = 5.5 * 60 * 60 * 1000; // 5.5 hours in milliseconds
+        date = new Date(date.getTime() - istOffset);
+        return date;
+      }
+    }
+
+    return date;
   } catch (error) {
     console.warn("Invalid timestamp format:", timestamp);
     return new Date();

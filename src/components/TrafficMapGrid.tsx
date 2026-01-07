@@ -221,7 +221,7 @@ export function TrafficMapGrid({
         });
 
         // Add grid number for all cells
-        const gridNumber = `${x + 1},${y + 1}`;
+        const gridNumber = `${x},${y}`;
         const center = rect.getBounds().getCenter();
 
         // Create a custom div icon for the grid number

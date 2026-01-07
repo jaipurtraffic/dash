@@ -15,6 +15,7 @@ interface FullTrafficGridProps {
   mode?: "traffic" | "severity";
   highlightTop10?: boolean;
   topAreasList?: React.ReactNode;
+  onCellClick?: (x: number, y: number) => void;
 }
 
 export function FullTrafficGrid({
@@ -22,6 +23,7 @@ export function FullTrafficGrid({
   mode = "traffic",
   highlightTop10 = false,
   topAreasList,
+  onCellClick,
 }: FullTrafficGridProps) {
   // Computed values
   const dataMap = useMemo(() => {
@@ -51,7 +53,7 @@ export function FullTrafficGrid({
               mode={mode}
               highlightTop10={highlightTop10}
               top10Cells={top10Cells}
-              onCellClick={() => {}}
+              onCellClick={onCellClick || (() => {})}
             />
           </div>
 

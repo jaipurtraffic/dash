@@ -10,6 +10,7 @@ interface TrafficAreaCardProps {
   showThresholdP95?: boolean;
   severityColors?: Record<string, string>;
   severityLevelColors?: Record<string, string>;
+  onDetailsClick?: () => void;
 }
 
 export function TrafficAreaCard({
@@ -18,6 +19,7 @@ export function TrafficAreaCard({
   showThresholdP95 = false,
   severityColors,
   severityLevelColors,
+  onDetailsClick,
 }: TrafficAreaCardProps) {
   const severity = getTrafficSeverityLevel(cell);
 
@@ -117,6 +119,33 @@ export function TrafficAreaCard({
                   />
                 </svg>
               </a>
+
+              {/* Details Button */}
+              <button
+                className={cn(
+                  "flex-shrink-0 inline-flex items-center justify-center",
+                  "w-6 h-6",
+                  "bg-secondary text-secondary-foreground rounded-full",
+                  "hover:bg-secondary/80 transition-colors",
+                )}
+                title="View History"
+                onClick={() => onDetailsClick?.()}
+                aria-label={`View history for grid ${cell.x}, ${cell.y}`}
+              >
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
 
